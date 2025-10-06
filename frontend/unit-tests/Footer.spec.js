@@ -59,4 +59,14 @@ describe("Footer.vue", () => {
     expect(text).toContain("(+61) 414 997 089");
     expect(text).toContain("convenor@pyrmontaction.org.au");
   });
+
+  // Verify if social media links are correct (facebook & insta)
+  it("contains social media links", () => {
+    const facebook = wrapper.find(".facebook");
+    const instagram = wrapper.find(".instagram");
+    expect(facebook.attributes("href")).toBe(
+      "https://www.facebook.com/people/Pyrmont-Action/100066510758084/#"
+    );
+    expect(instagram.attributes("href")).toBe("https://www.instagram.com/pyrmontaction/");
+  });
 });
