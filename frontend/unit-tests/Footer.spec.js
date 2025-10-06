@@ -29,10 +29,19 @@ describe("Footer.vue", () => {
     await Promise.resolve();
   });
 
+  // Verify footer content correctly rendering
   it("renders footer and key sections correctly", () => {
     expect(wrapper.find(".footer-body").exists()).toBe(true);
     expect(wrapper.text()).toContain("Our Partners");
     expect(wrapper.text()).toContain("Gallery");
     expect(wrapper.text()).toContain("Contact Us");
+  });
+
+  // Verify partner links display correctly
+  it("renders partner links correctly", () => {
+    const partnerLinks = wrapper.findAll(".column a");
+    const hrefs = partnerLinks.map((a) => a.attributes("href"));
+    expect(hrefs).toContain("https://pyrmontultimolandcare.org.au/");
+    expect(hrefs).toContain("https://jacksonslanding.net.au/");
   });
 });
