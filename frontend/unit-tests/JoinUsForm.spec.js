@@ -38,6 +38,7 @@ describe("JoinUsForm.vue - Sign Up Form Validation", () => {
     expect(wrapper.vm.passwordValidator.symbols).to.equal(true);
   });
 
+  // Email input updates reactive state
   it("updates email field correctly", async () => {
     const wrapper = mount(JoinUsForm, {
       global: { plugins: [router] },
@@ -48,5 +49,15 @@ describe("JoinUsForm.vue - Sign Up Form Validation", () => {
 
     // Assert by checking the DOM input value (realistic for E2E-style unit)
     expect(emailInput.element.value).toBe("test@example.com");
+  });
+
+  // State dropdown default & selection
+  it("defaults state to 'Default' and changes when selected", async () => {
+    const wrapper = mount(JoinUsForm);
+
+    expect(wrapper.vm.stateChosen).to.equal("Default");
+
+    await wrapper.find("#state").setValue("NSW");
+    expect(wrapper.vm.stateChosen).to.equal("NSW");
   });
 });
