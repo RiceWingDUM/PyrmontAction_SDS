@@ -51,4 +51,12 @@ describe("Footer.vue", () => {
     expect(images.length).toBe(2);
     expect(images[0].attributes("src")).toContain("/src/assets/Gallery/img1.jpg");
   });
+
+  // Verify contact info is correct in footer section
+  it("contains correct contact information", () => {
+    const text = wrapper.text();
+    expect(text).toContain("79A John St, Pyrmont NSW 2009");
+    expect(text).toContain("(+61) 414 997 089");
+    expect(text).toContain("convenor@pyrmontaction.org.au");
+  });
 });
