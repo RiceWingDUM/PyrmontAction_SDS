@@ -44,4 +44,11 @@ describe("Footer.vue", () => {
     expect(hrefs).toContain("https://pyrmontultimolandcare.org.au/");
     expect(hrefs).toContain("https://jacksonslanding.net.au/");
   });
+
+  // Verify gallery images load dynamically
+  it("loads gallery images dynamically", async () => {
+    const images = wrapper.findAll(".gallery img");
+    expect(images.length).toBe(2);
+    expect(images[0].attributes("src")).toContain("/src/assets/Gallery/img1.jpg");
+  });
 });
