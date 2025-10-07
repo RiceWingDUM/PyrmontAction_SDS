@@ -15,4 +15,15 @@ describe("Carousel.vue - Unit Tests", () => {
     wrapper = mount(Carousel);
     wrapper.vm.getSlideCount.value = 3;
   });
+
+  // Verify initial slide index
+  it("initializes with currentSlide = 1", () => {
+    expect(wrapper.vm.currentSlide).toBe(1);
+  });
+
+  // Check next slide function
+  it("advances to next slide correctly", async () => {
+    wrapper.vm.nextSlide();
+    expect(wrapper.vm.currentSlide).toBe(2);
+  });
 });
