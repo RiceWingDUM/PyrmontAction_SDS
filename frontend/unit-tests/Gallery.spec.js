@@ -16,4 +16,13 @@ describe("GalleryCollage.vue", () => {
     expect(images[0].attributes("alt")).toBe("Alt text 1");
   });
 
+  // Test to emit event on image click
+  it("emits 'select-image' event when an image is clicked", async () => {
+    const wrapper = mount(GalleryCollage, { props: { images: mockImages } });
+    await wrapper.findAll(".collage-item")[0].trigger("click");
+
+    const emitted = wrapper.emitted("select-image");
+    expect(emitted).toBeTruthy();
+    expect(emitted[0][0]).toHaveProperty("src");
+  });
 });
