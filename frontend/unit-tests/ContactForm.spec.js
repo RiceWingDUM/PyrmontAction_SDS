@@ -40,4 +40,15 @@ describe("ContactFormSection.vue", () => {
     expect(wrapper.vm.submitted).toBe(true);
     expect(wrapper.find(".success-message").exists()).toBe(true);
   });
+
+  it("disables submit button while submitting", async () => {
+    contactUsAPIServices.sendInquiry.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve({ ok: true }), 500))
+    );
+
+    const submitBtn = wrapper.find(".submit-btn");
+    await wrapper.find("form").trigger("submit.prevent");
+    expect(submitBtn.attributes("disabled")).toBeDefined();
+  });
+
 });
