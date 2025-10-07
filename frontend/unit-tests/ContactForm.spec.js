@@ -17,4 +17,12 @@ describe("ContactFormSection.vue", () => {
     wrapper = mount(ContactFormSection);
   });
 
+  // Verify form fields rendering
+  it("renders form fields correctly", () => {
+    expect(wrapper.find("#firstName").exists()).toBe(true);
+    expect(wrapper.find("#lastName").exists()).toBe(true);
+    expect(wrapper.find("#email").exists()).toBe(true);
+    expect(wrapper.find("#message").exists()).toBe(true);
+  });
+
 });
