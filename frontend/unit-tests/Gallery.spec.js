@@ -26,6 +26,14 @@ describe("GalleryCollage.vue", () => {
     expect(emitted).toBeTruthy();
     expect(emitted[0][0]).toHaveProperty("src");
   });
+
+  // Test to use placeholder if image fails to load
+  it("uses placeholder image if file not found in import map", async () => {
+    const wrapper = mount(GalleryCollage, { props: { images: mockImages } });
+    const img = wrapper.find("img");
+    await img.trigger("error");
+    expect(img.attributes("src")).toContain("placeholder.png");
+  });
 });
 
 describe("GalleryLightbox.vue", () => {
@@ -35,6 +43,7 @@ describe("GalleryLightbox.vue", () => {
     caption: "Sample caption",
   };
 
+  // Test to render lightbox with given image prop
   it("renders lightbox when image prop is provided", () => {
     const wrapper = mount(GalleryLightbox, { props: { image: mockImage } });
     expect(wrapper.find(".lightbox-image").exists()).toBe(true);
