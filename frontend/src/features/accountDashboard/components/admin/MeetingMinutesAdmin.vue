@@ -85,8 +85,7 @@
 import { reactive, ref, computed } from 'vue'
 
 const minutes = ref([
-  { id: 1, date: '2025-09-28', title: 'Monthly Committee', author: 'AM', files: [{ name: 'minutes_sep.pdf' }], status: 'published' },
-  { id: 2, date: '2025-08-18', title: 'AGM Planning', author: 'Henil', files: [{ name: 'agm_agenda.pdf' }], status: 'draft' },
+
 ])
 
 const draft = reactive({ id: null, title: '', body: '', files: [], status: null })

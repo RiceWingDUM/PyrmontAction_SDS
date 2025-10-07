@@ -3,10 +3,9 @@
     <div class="calendar container">
       <div class="topbar">
         <h1 class="ttl">Event Calendar (Admin)</h1>
-        <button class="btn primary" @click="openCreate">Add Event</button>
+        <button class="btn primary" @click="openCreate">+ Add Event</button>
       </div>
 
-      <!-- Day groups -->
       <div v-for="(group, gi) in groups" :key="gi" class="day">
         <div class="dayHead">
           <div class="dayTitle">{{ group.label }}</div>
@@ -15,139 +14,108 @@
 
         <div v-if="!group.events.length" class="nothing">Nothing Planned yet</div>
 
-        <div
-          v-for="ev in group.events"
-          :key="ev.id"
-          class="eventRow"
-          @click="openView(ev)"
-        >
+        <div v-for="ev in group.events" :key="ev.id" class="eventRow" @click="openView(ev)">
           <div class="icon">🔔</div>
-
-          <!-- image preview -->
           <div class="thumb" :style="imageStyle(ev.image)">
-            <span v-if="!ev.image?.src" class="imgPh">Image</span>
+            <span v-if="!hasImage(ev.image)" class="imgPh">Image</span>
           </div>
 
           <div class="info">
-            <div class="label"><b>Name:</b> {{ ev.title }}</div>
-            <div class="label"><b>Location:</b> {{ ev.location }}</div>
+            <div><b>Name:</b> {{ ev.title }}</div>
+            <div><b>Location:</b> {{ ev.location }}</div>
           </div>
 
           <div class="times">
             <div><b>Start:</b> {{ fmtTime(ev.start) }}</div>
             <div><b>End:</b> {{ fmtTime(ev.end) }}</div>
           </div>
-
-          <div class="actions" @click.stop>
-            <button class="btn sm" @click="openEdit(ev)">Edit</button>
-            <button class="btn sm danger" @click="remove(ev.id)">Delete</button>
-          </div>
         </div>
       </div>
     </div>
 
-    <!-- View modal -->
+    <!-- View Modal -->
     <div v-if="viewer" class="modal">
       <div class="modalCard">
-        <div class="modalHead">
-          <h3 class="modalTtl">{{ viewer.title }}</h3>
-          <button class="btn sm" @click="viewer = null">Close</button>
-        </div>
-        <div class="modalBody">
-          <div class="cols">
-            <div class="col">
-              <div class="row"><b>Date:</b> {{ fmtDate(viewer.start) }}</div>
-              <div class="row"><b>Time:</b> {{ fmtTime(viewer.start) }} – {{ fmtTime(viewer.end) }}</div>
-              <div class="row"><b>Location:</b> {{ viewer.location }}</div>
+        <h3 class="modalTitle">{{ viewer.title }}</h3>
+        <div class="modalContent">
+          <div class="modalLeft">
+            <p><b>Date:</b> {{ fmtDate(viewer.start) }}</p>
+            <p><b>Time:</b> {{ fmtTime(viewer.start) }} - {{ fmtTime(viewer.end) }}</p>
+            <p><b>Location:</b> {{ viewer.location }}</p>
+
+            <div class="modalSection">
+              <b>Details</b>
+              <ul>
+                <li v-for="(d,i) in viewer.details" :key="i">{{ d }}</li>
+                <li v-if="!viewer.details?.length" class="muted">—</li>
+              </ul>
             </div>
-            <div class="col imageLg" :style="imageStyle(viewer.image, true)">
-              <span v-if="!viewer.image?.src" class="imgPh">Image</span>
+
+            <div class="modalSection">
+              <b>Why It Matters</b>
+              <p>{{ viewer.why || '—' }}</p>
             </div>
           </div>
 
-          <div class="subttl">Details</div>
-          <ul class="bullets">
-            <li v-for="(d,i) in viewer.details" :key="i">{{ d }}</li>
-            <li v-if="!viewer.details?.length" class="muted">—</li>
-          </ul>
-
-          <div class="subttl">Why It Matters</div>
-          <p class="muted">{{ viewer.why || '—' }}</p>
+          <div class="modalRight" :style="imageStyle(viewer.image, true)">
+            <span v-if="!hasImage(viewer.image)" class="imgPh">Image</span>
+          </div>
         </div>
+        <button class="btn primary" @click="viewer=null">Close</button>
       </div>
     </div>
 
-    <!-- Create/Edit modal -->
+    <!-- Create/Edit Modal -->
     <div v-if="editor.open" class="modal">
-      <div class="modalCard">
-        <div class="modalHead">
-          <h3 class="modalTtl">{{ editor.mode === 'create' ? 'Add Event' : 'Edit Event' }}</h3>
-          <button class="btn sm" @click="closeEditor">Close</button>
-        </div>
-
+      <div class="modalCard addModal">
+        <h3 class="modalTitle">{{ editor.mode === 'create' ? 'Add New Event' : 'Edit Event' }}</h3>
         <form class="form" @submit.prevent="saveEditor">
-          <div class="grid2">
-            <label>Title</label>
-            <input v-model="editor.form.title" class="input" placeholder="Event title" required />
+          <label>Event Title</label>
+          <input v-model="editor.form.title" class="input" required />
 
-            <label>Date</label>
-            <input v-model="editor.form.date" type="date" class="input" required />
+          <label>Date</label>
+          <input v-model="editor.form.date" type="date" class="input" required />
 
-            <label>Start time</label>
-            <input v-model="editor.form.startTime" type="time" class="input" required />
-
-            <label>End time</label>
-            <input v-model="editor.form.endTime" type="time" class="input" required />
-
-            <label>Location</label>
-            <input v-model="editor.form.location" class="input" placeholder="Venue / address" required />
-
-            <label>Details (bullets)</label>
-            <textarea v-model="editor.form.detailsRaw" class="input" rows="3" placeholder="One item per line"></textarea>
-
-            <label>Why it matters</label>
-            <textarea v-model="editor.form.why" class="input" rows="3" placeholder="Short paragraph"></textarea>
-
-            <!-- Image upload + adjustments -->
-            <label>Image</label>
-            <div class="imgControls">
-              <div class="imgPreview" :style="imageStyle(editor.form.image, true)">
-                <span v-if="!editor.form.image?.src" class="imgPh">Preview</span>
-              </div>
-              <div class="imgInputs">
-                <input type="file" accept="image/*" @change="pickImage" />
-                <div class="rowInline">
-                  <label class="mini">Fit</label>
-                  <select v-model="editor.form.image.fit" class="input mini">
-                    <option value="cover">Cover</option>
-                    <option value="contain">Contain</option>
-                  </select>
-                </div>
-                <div class="rowInline">
-                  <label class="mini">Zoom</label>
-                  <input type="range" min="0.5" max="2" step="0.01" v-model.number="editor.form.image.scale" />
-                  <span class="mini">{{ (editor.form.image.scale * 100).toFixed(0) }}%</span>
-                </div>
-                <div class="rowInline">
-                  <label class="mini">X</label>
-                  <input type="range" min="0" max="100" step="1" v-model.number="editor.form.image.x" />
-                  <span class="mini">{{ editor.form.image.x }}%</span>
-                </div>
-                <div class="rowInline">
-                  <label class="mini">Y</label>
-                  <input type="range" min="0" max="100" step="1" v-model.number="editor.form.image.y" />
-                  <span class="mini">{{ editor.form.image.y }}%</span>
-                </div>
-                <button class="btn sm" type="button" @click="clearImage" :disabled="!editor.form.image.src">Remove Image</button>
-              </div>
+          <div class="timeRow">
+            <div>
+              <label>Start Time</label>
+              <input v-model="editor.form.startTime" type="time" class="input" required />
+            </div>
+            <div>
+              <label>End Time</label>
+              <input v-model="editor.form.endTime" type="time" class="input" required />
             </div>
           </div>
 
-          <div class="actions mt">
-            <button class="btn primary" type="submit">
-              {{ editor.mode === 'create' ? 'Save Event' : 'Save Changes' }}
-            </button>
-            <button class="btn" type="button" @click="closeEditor">Cancel</button>
+          <label>Location</label>
+          <input v-model="editor.form.location" class="input" placeholder="Venue or Address" required />
+
+          <label>Details (one per line)</label>
+          <textarea v-model="editor.form.detailsRaw" class="input" rows="3"></textarea>
+
+          <label>Why It Matters</label>
+          <textarea v-model="editor.form.why" class="input" rows="3"></textarea>
+
+          <!-- ===== Image inputs (Assets filename / URL / Local preview) ===== -->
+          <label>Image (from <code>frontend/src/assets/Events/</code>)</label>
+          <select v-model="editor.form.image" class="input">
+            <option value="">— Select a file in assets/Events —</option>
+            <option v-for="opt in assetOptions" :key="opt.name" :value="opt.name">{{ opt.name }}</option>
+          </select>
+
+          <label>Or paste a full image URL (optional)</label>
+          <input v-model="editor.form.image" class="input" placeholder="https://..." />
+
+          <label>Choose File (for preview only; dev copies to assets later)</label>
+          <input type="file" accept="image/*" @change="pickImage" />
+
+          <div class="imgPreview" :style="imageStyle(editor.form.image, true)">
+            <span v-if="!hasImage(editor.form.image)" class="imgPh">Preview</span>
+          </div>
+
+          <div class="formActions">
+            <button type="submit" class="btn primary">{{ editor.mode === 'create' ? 'Save' : 'Save Changes' }}</button>
+            <button type="button" class="btn" @click="closeEditor">Cancel</button>
           </div>
         </form>
       </div>
@@ -158,7 +126,17 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-/* ---------- demo events (UI only) ---------- */
+/* ====== ASSETS: map files that exist in frontend/src/assets/Events ====== */
+const assetMap = import.meta.glob('../assets/Events/*.{png,jpg,jpeg,webp}', {
+  eager: true,
+  as: 'url'
+})
+const assetOptions = Object.keys(assetMap).map(p => ({ name: p.split('/').pop(), url: assetMap[p] }))
+
+/* ====== CONFIG (future friendly) ====== */
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+
+/* ====== DEMO DATA (UI-only) ====== */
 const events = ref([
   {
     id: 1,
@@ -166,276 +144,141 @@ const events = ref([
     location: 'Pyrmont Bay Park',
     start: setTime(new Date(), 9, 0),
     end:   setTime(new Date(), 17, 0),
-    details: ['Guest Speakers','Live Music','Raffle Prizes'],
+    details: ['Guest Speakers', 'Live Music', 'Raffle Prizes'],
     why: 'Support a more connected Pyrmont with community-led action.',
-    image: { src: '', fit: 'cover', scale: 1, x: 50, y: 50 },
-  },
-  {
-    id: 2,
-    title: 'Pyrmont Weekling Meeting',
-    location: 'Pyrmont Community Centre',
-    start: setTime(addDays(new Date(), 3), 16, 0),
-    end:   setTime(addDays(new Date(), 3), 17, 0),
-    details: ['Project updates','Volunteers welcome'],
-    why: 'Monthly coordination across projects.',
-    image: { src: '', fit: 'cover', scale: 1, x: 50, y: 50 },
-  },
+    image: '' // store just a filename like "fundraiser.jpg" OR a full URL
+  }
 ])
 
-/* ---------- modals ---------- */
+/* ====== MODALS ====== */
 const viewer = ref(null)
 function openView(ev){ viewer.value = ev }
-
-const defaultImg = () => ({ src:'', fit:'cover', scale:1, x:50, y:50 })
 
 const editor = ref({
   open: false,
   mode: 'create',
-  id: null,
-  form: { title:'', date:'', startTime:'', endTime:'', location:'', detailsRaw:'', why:'', image: defaultImg() }
+  form: { title:'', date:'', startTime:'', endTime:'', location:'', detailsRaw:'', why:'', image:'', file:null }
 })
 
 function openCreate(){
-  editor.value = {
-    open: true, mode: 'create', id: null,
-    form: { title:'', date: todayISO(), startTime:'09:00', endTime:'17:00', location:'', detailsRaw:'', why:'', image: defaultImg() }
-  }
-}
-function openEdit(ev){
-  const d = new Date(ev.start)
-  editor.value = {
-    open: true, mode: 'edit', id: ev.id,
-    form: {
-      title: ev.title,
-      date: toISODate(d),
-      startTime: toTime(d),
-      endTime: toTime(new Date(ev.end)),
-      location: ev.location,
-      detailsRaw: (ev.details || []).join('\n'),
-      why: ev.why || '',
-      image: ev.image ? { ...ev.image } : defaultImg(),
-    }
-  }
+  editor.value = { open:true, mode:'create', form: { title:'', date: todayISO(), startTime:'09:00', endTime:'17:00', location:'', detailsRaw:'', why:'', image:'', file:null } }
 }
 function closeEditor(){ editor.value.open = false }
 
+/* ====== IMAGE helpers ====== */
 function pickImage(e){
   const file = e.target.files?.[0]
   if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => { editor.value.form.image.src = String(reader.result) }
-  reader.readAsDataURL(file)
+  editor.value.form.file = file
+  // preview only – DOES NOT write into assets automatically
+  editor.value.form.image = { src: URL.createObjectURL(file) }
 }
-function clearImage(){ editor.value.form.image = defaultImg() }
 
+function hasImage(img){
+  if (!img) return false
+  if (typeof img === 'string') return !!img
+  if (typeof img === 'object') return !!img.src
+  return false
+}
+
+function resolveImageURL(img){
+  if (!img) return null
+  if (typeof img === 'object' && img.src) return img.src        // preview object
+  if (typeof img !== 'string') return null
+  if (/^https?:\/\//.test(img)) return img                    // full URL
+  if (img.startsWith('/uploads/')) return API_BASE + img        // future backend uploads
+  // treat as assets filename
+  const key = Object.keys(assetMap).find(k => k.endsWith('/' + img))
+  return key ? assetMap[key] : null
+}
+
+function imageStyle(img, large = false){
+  const w = large ? 320 : 160
+  const h = large ? 200 : 96
+  const base = { width: w+'px', height: h+'px', border: '1px solid #ccc', borderRadius: '10px', overflow: 'hidden', background: '#fff', backgroundSize: 'cover', backgroundPosition: 'center' }
+  const url = resolveImageURL(img)
+  return url ? { ...base, backgroundImage: `url('${url}')` } : base
+}
+
+/* ====== SAVE ====== */
 function saveEditor(){
   const f = editor.value.form
   const start = combineDateTime(f.date, f.startTime)
   const end   = combineDateTime(f.date, f.endTime)
+
+  // Only store STRING (filename or URL). Ignore preview object when saving.
+  const imageField = typeof f.image === 'string' ? f.image : ''
+
   const base = {
+    id: Date.now(),
     title: f.title.trim(),
     location: f.location.trim(),
     start, end,
     details: (f.detailsRaw || '').split('\n').map(s => s.trim()).filter(Boolean),
     why: f.why.trim(),
-    image: { ...f.image },
+    image: imageField
   }
-  if (editor.value.mode === 'create') {
-    events.value.push({ id: Date.now(), ...base })
-  } else {
-    const i = events.value.findIndex(e => e.id === editor.value.id)
-    if (i > -1) events.value[i] = { id: editor.value.id, ...base }
-  }
+  events.value.push(base)
   editor.value.open = false
 }
 
-function remove(id){ events.value = events.value.filter(e => e.id !== id) }
-
-/* ---------- grouping (Today / Tomorrow / Weekday) ---------- */
+/* ====== GROUPING ====== */
 const groups = computed(() => {
   const byDay = groupByDate(events.value)
-  return byDay.map(({ date, items }) => ({
-    label: labelFor(date),
-    sub: fmtDate(items[0]?.start ?? date),
-    events: items.sort((a,b)=>a.start-b.start)
-  }))
+  return byDay.map(({ date, items }) => ({ label: labelFor(date), sub: fmtDate(items[0]?.start ?? date), events: items.sort((a,b)=>a.start-b.start) }))
 })
 
-/* ---------- image style helper ---------- */
-function imageStyle(img, large = false){
-  const w = large ? 320 : 160
-  const h = large ? 200 : 96
-  const base = { width: w+'px', height: h+'px', border: '1px solid #e5e7eb', borderRadius: '10px', overflow: 'hidden', background: '#fff' }
-  if (!img?.src) return base
-  const size = img.fit === 'contain' ? 'contain' : `${Math.max(10, img.scale*100)}% auto`
-  const position = `${img.x}% ${img.y}%`
-  return {
-    ...base,
-    backgroundImage: `url('${img.src}')`,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: position,
-    backgroundSize: size,
-  }
-}
-
-/* ---------- helpers ---------- */
+/* ====== DATE HELPERS ====== */
 function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x }
 function setTime(d, h, m){ const x = new Date(d); x.setHours(h, m, 0, 0); return x }
-function startOfDay(t){ const d = new Date(t); d.setHours(0,0,0,0); return d }
-function sameDay(a,b){ const A=new Date(a), B=new Date(b); return A.getFullYear()===B.getFullYear() && A.getMonth()===B.getMonth() && A.getDate()===B.getDate() }
+function startOfDay(d){ const x = new Date(d); x.setHours(0, 0, 0, 0); return x }
+function sameDay(a,b){ return a.toDateString() === b.toDateString() }
 function groupByDate(list){
-  const days = []
+  const map = new Map()
   list.forEach(ev => {
-    const key = startOfDay(ev.start).toISOString()
-    let g = days.find(d => d.key === key)
-    if (!g) { g = { key, date: new Date(key), items: [] }; days.push(g) }
-    g.items.push(ev)
+    const key = startOfDay(ev.start).toDateString()
+    if (!map.has(key)) map.set(key, { date: new Date(key), items: [] })
+    map.get(key).items.push(ev)
   })
-  return days.sort((a,b)=>a.date-b.date)
+  return [...map.values()].sort((a,b)=>a.date-b.date)
 }
 function labelFor(date){
-  const d = startOfDay(date), today = startOfDay(new Date()), tomorrow = addDays(today,1)
-  if (sameDay(d,today)) return 'Today'
-  if (sameDay(d,tomorrow)) return 'Tomorrow'
-  return d.toLocaleDateString(undefined, { weekday:'long' })
+  const today = startOfDay(new Date())
+  const d = startOfDay(date)
+  if (sameDay(d, today)) return 'Today'
+  if (sameDay(d, addDays(today, 1))) return 'Tomorrow'
+  return d.toLocaleDateString(undefined, { weekday: 'long' })
 }
-function fmtDate(t){ return new Date(t).toLocaleDateString(undefined, { day:'numeric', month:'long' }) }
+function fmtDate(d){ return new Date(d).toLocaleDateString(undefined, { day:'numeric', month:'long' }) }
 function fmtTime(t){ return new Date(t).toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' }) }
-function todayISO(){ return toISODate(new Date()) }
-function toISODate(d){ return d.toISOString().slice(0,10) }
-function toTime(d){ return d.toTimeString().slice(0,5) }
-function combineDateTime(dateStr, timeStr){
-  const [y,m,da] = dateStr.split('-').map(n=>parseInt(n,10))
-  const [hh,mm]  = timeStr.split(':').map(n=>parseInt(n,10))
-  return new Date(y, m-1, da, hh, mm, 0, 0)
-}
+function todayISO(){ const d = new Date(); return d.toISOString().slice(0,10) }
+function combineDateTime(dateStr, timeStr){ const [y,m,da] = dateStr.split('-').map(Number); const [hh,mm] = timeStr.split(':').map(Number); return new Date(y, m-1, da, hh, mm) }
 </script>
 
 <style scoped>
-/* ===== layout wrapper so footer stays down (no App.vue edit) ===== */
-.page-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* vertical center */
-  align-items: center;     /* horizontal center */
-  background: linear-gradient(135deg, #f5f6fa 60%, #e9ecef 100%);
-  padding: 0;
-}
-
-/* ===== main container ===== */
-.container {
-  max-width: 700px;
-  width: 100%;
-  margin: 40px 0;
-  padding: 48px 40px 48px 40px;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(60, 60, 90, 0.12), 0 1.5px 6px rgba(0,0,0,0.04);
-  border: 1px solid #ececec;
-  transition: box-shadow 0.2s;
-}
-
-.topbar {
-  margin-bottom: 32px;
-}
-
-.ttl{font-size: clamp(24px, 3.2vw, 34px);font-weight:700;margin:0}
-
-/* ===== day blocks ===== */
-.day{margin:32px 0}
-.dayHead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
-.dayTitle{font-weight:700}
-.daySub{color:#6b7280;font-size:14px}
-.nothing {
-  color: #b0b3b8;
-  padding: 18px 0;
-  border-top: 1px solid #eee;
-  text-align: center;
-  font-size: 16px;
-}
-
-/* ===== event row ===== */
-.eventRow {
-  margin: 24px 0;
-  padding: 20px 20px;
-  border-radius: 14px;
-  background: #f8fafc;
-  box-shadow: 0 2px 8px rgba(60,60,90,0.05);
-  border: 1px solid #f0f0f0;
-}
-
-/* ===== modal ===== */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:1000}
-.modalCard {
-  max-width: min(1200px, 98vw);
-  padding: 32px;
-  border-radius: 18px;
-}
-.modalHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.modalTtl{margin:0;font-size:20px;font-weight:700}
-.modalBody{font-size:15px}
-.cols{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start;margin-bottom:14px}
-.imageLg{
-  height:200px;border:1px solid #e5e7eb;border-radius:12px;display:flex;
-  align-items:center;justify-content:center;color:#6b7280;overflow:hidden;background:#fff
-}
-.subttl{font-weight:700;margin-top:10px}
-.bullets{margin:6px 0 0 18px}
-.muted{color:#6b7280}
-
-/* ===== editor form ===== */
-.form{margin-top:6px}
-.grid2{display:grid;grid-template-columns:180px 1fr;gap:12px 14px}
-.input{border:1px solid #e5e7eb;border-radius:10px;padding:9px 12px;background:#fff}
-
-/* ===== image editor ===== */
-.imgControls{display:grid;grid-template-columns:320px 1fr;gap:14px;align-items:start}
-.imgPreview{
-  width:320px;height:200px;border:1px solid #e5e7eb;border-radius:12px;display:flex;
-  align-items:center;justify-content:center;overflow:hidden;background:#fff
-}
-.imgInputs{display:grid;gap:8px}
-.rowInline{display:flex;align-items:center;gap:8px}
-.mini{font-size:12px;color:#4b5563}
-
-/* ===== responsive ===== */
-@media (max-width: 1280px) {
-  .container {
-    max-width: 98vw;
-    padding: 24px 8px 40px;
-  }
-  .modalCard {
-    padding: 18px;
-  }
-}
-
-@media (max-width: 1024px){
-  .eventRow {
-    grid-template-columns: 48px 120px 1fr;
-    font-size: 15px;
-  }
-  .container {
-    padding: 12px 2vw 24px;
-  }
-}
-
-@media (max-width: 900px) {
-  .container {
-    max-width: 98vw;
-    padding: 24px 8px 32px 8px;
-  }
-}
-
-/* ===== only-while-this-page-is-mounted footer tweaks ===== */
-:deep(footer){
-  padding-top: 24px !important;
-  padding-bottom: 24px !important;
-}
-:deep(footer .container), :deep(footer .inner), :deep(footer .wrap){
-  max-width: 1100px;
-  margin: 0 auto;
-  padding-left: 20px;
-  padding-right: 20px;
-}
+.page-wrapper { display:flex; justify-content:center; padding:40px; background:#fafafa; }
+.container { width: 720px; background:#fff; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.05); padding:32px; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.ttl { font-size:24px; font-weight:700; }
+.dayHead { display:flex; align-items:center; gap:8px; margin-top:24px; border-bottom:1px solid #ccc; padding-bottom:4px; }
+.dayTitle { font-weight:700; }
+.daySub { font-size:14px; color:#777; }
+.eventRow { display:grid; grid-template-columns:40px 160px 1fr 160px; align-items:center; gap:12px; border:1px solid #000; border-radius:6px; margin-top:12px; padding:12px; }
+.icon { text-align:center; }
+.nothing { text-align:center; color:#777; margin:12px 0; }
+.btn { cursor:pointer; border:none; padding:8px 14px; border-radius:6px; font-weight:600; }
+.btn.primary { background:#111; color:#fff; }
+.modal { position:fixed; inset:0; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; }
+.modalCard { background:#fff; padding:24px; border-radius:12px; width:680px; box-shadow:0 8px 24px rgba(0,0,0,.15); }
+.modalTitle { text-align:center; font-size:20px; font-weight:700; margin-bottom:16px; }
+.modalContent { display:flex; justify-content:space-between; gap:16px; }
+.modalLeft { flex:1; }
+.modalRight { width:320px; height:200px; border:1px solid #000; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#fff; }
+.imgPh { font-size:12px; color:#999; }
+.form { display:flex; flex-direction:column; gap:12px; }
+.input { border:1px solid #ccc; border-radius:6px; padding:8px; }
+.imgPreview { width:320px; height:200px; border:1px solid #000; border-radius:8px; margin-top:8px; display:flex; align-items:center; justify-content:center; }
+.formActions { display:flex; gap:12px; justify-content:flex-end; margin-top:16px; }
+.timeRow { display:flex; gap:12px; }
+.muted { color:#6b7280; }
 </style>
