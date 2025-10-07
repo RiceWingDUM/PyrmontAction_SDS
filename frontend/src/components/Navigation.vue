@@ -1,3 +1,25 @@
+<script setup>
+import { useUserStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';
+import {logout} from '@/services/authServices';
+
+const userStore = useUserStore();
+const router = useRouter();
+
+const handleLogout = async () => {
+  try {
+    // Clear token from store
+    userStore.logout();
+    // Redirect to login page
+    await router.push('/login');
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
+
+console.log('Is Authenticated:', userStore.isAuthenticated);
+</script>
+
 <!-- src/components/Navigation.vue -->
 <template>
   <header class="site-header">
@@ -19,15 +41,28 @@
         <li><RouterLink class="link" :to="{ name: 'about'    }">About Us</RouterLink></li>
         <li><RouterLink class="link" :to="{ name: 'gallery'  }">Gallery</RouterLink></li>
         <li><RouterLink class="link" :to="{ name: 'contact'  }">Contact</RouterLink></li>
-        <li><RouterLink class="link" :to="{ name: 'Join Us'  }">Join Us</RouterLink></li>
-        <li><RouterLink class="login" :to="{ name: 'Login'  }">Login</RouterLink></li>
+        <li v-if="!userStore.isAuthenticated">
+          <RouterLink class="link" :to="{ name: 'Join Us' }">Join Us</RouterLink>
+        </li>
+        <li v-if="!userStore.isAuthenticated">
+          <RouterLink class="login" :to="{ name: 'Login' }">Login</RouterLink>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.role === 'member'">
+          <RouterLink class="link" :to="{ name: 'memberDashboard' }">MyAccount</RouterLink>
+        </li>
+        <li v-if="userStore.isAuthenticated && (userStore.role === 'admin' || userStore.role === 'editor')">
+          <RouterLink class="link" :to="{ name: 'adminDashboard' }">MyAccount</RouterLink>
+        </li>
+        <li v-if="userStore.isAuthenticated && userStore.role === 'editor'">
+          <RouterLink class="link" :to="{ name: 'editorDashboard' }">MyAccount</RouterLink>
+        </li>
+        <li v-if="userStore.isAuthenticated">
+          <button class="link logout-btn" @click="handleLogout">Logout</button>
+        </li>
       </ul>
     </nav>
   </header>
 </template>
-
-<script setup>
-</script>
 
 <style lang="css">
 header {
@@ -135,5 +170,11 @@ nav .dropdown:hover .dropdown-menu {
 
 nav .dropdown-menu li {
   padding: 8% 8%;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 </style>

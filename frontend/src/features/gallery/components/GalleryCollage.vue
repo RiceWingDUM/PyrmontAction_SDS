@@ -32,7 +32,7 @@ function handleImageError(e) {
   <div class="gallery-collage">
     <div
         v-for="(image, index) in images"
-        :key="image.image_id"
+        :key="image._id"
         class="collage-item"
         :style="{ '--animation-order': index }"
         role="button"

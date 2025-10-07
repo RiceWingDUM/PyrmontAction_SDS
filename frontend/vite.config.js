@@ -4,6 +4,7 @@ import vue            from '@vitejs/plugin-vue'
 import vueJsx         from '@vitejs/plugin-vue-jsx'
 import vueDevTools    from 'vite-plugin-vue-devtools'
 import { fileURLToPath, URL } from 'node:url'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,6 +13,14 @@ export default defineConfig({
     vueJsx(),        // if you ever write <script setup lang="jsx">
     vueDevTools(),   // optional dev‑tools plugin
   ],
+  test: {
+    globals: true,         // allows using `describe/it/expect` without imports
+    environment: "jsdom",  // simulates a browser DOM
+    // setupFiles: "./tests/setup.js", // optional: global test setup
+    // include: [
+    //   '../tests/unit/**/*.spec.{js,ts}' // 👈 pick up tests outside frontend
+    // ],
+  },
 
   resolve: {
     alias: {

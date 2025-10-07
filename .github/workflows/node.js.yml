@@ -1,0 +1,76 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-latest, windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Unit Tests
+        run: npx vitest run frontend/unit-test/JoinUsForm.spec.js
+
+      - name: Run E2E Tests
+        run: npx playwright install; npx playwright test tests/e2e/joinUsForm.spec.js
+
+  # notify-discord:
+  #   needs: test # wait until "test" job is done
+  #   runs-on: macos-latest, windows-latest
+  #   if: always() # runs even if tests fail
+  #   steps:
+  #     - name: Send status to Discord
+  #       uses: Ilshidur/action-discord@master
+  #       with:
+  #         webhook: ${{ secrets.https://discord.com/api/webhooks/1419269299327078452/Dp793vlMik-xZNqC671_aLnKZQ9ESbfXo88pHfMF0TBpksCgGc64Qubm3wrZekfAJ3Sd/github }}
+  #         args: |
+  #           **CI/CD Update** for ${{ github.repository }}
+  #           - Commit: ${{ github.sha }}
+  #           - Branch: ${{ github.ref }}
+  #           - Status: ${{ job.status }}
+
+# name: Node.js CI
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# jobs:
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [18.x, 20.x, 22.x]
+#         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+#     steps:
+#     - uses: actions/checkout@v4
+#     - name: Use Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
+#     - run: npm ci
+#     - run: npm run build --if-present
+#     - run: npm test

@@ -31,7 +31,7 @@
 
           <!-- Learn More Link -->
 
-          <a :href="`/projects/${project.project_type}/${project.project_id}`" class="project-card__link">
+          <a :href="`/projects/${project.project_type}/${project._id}`" class="project-card__link">
             LEARN MORE
             <span class="arrow">→</span>
           </a>

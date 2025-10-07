@@ -33,18 +33,15 @@
     async function fetchData(id){
 
         try{
-            const response = await projects.getIndividualProjects(id);
-            const projectData = await response.json();
-            individualProject.value = projectData.project;
+            const { project } = await projects.getIndividualProjects(id);
+            individualProject.value = project;
 
-            let listResponse;
+            let listData;
             if (individualProject.value.project_type === 'open') {
-                listResponse = await projects.viewOpenProjects();
+                listData = await projects.viewOpenProjects();
             } else if (individualProject.value.project_type === 'closed') {
-                listResponse = await projects.viewClosedProjects();
+                listData = await projects.viewClosedProjects();
             }
-
-            const listData = await listResponse.json();
 
             relatedProjects.value = listData.projects.filter(
                 p => p.project_name !== individualProject.value.project_name
