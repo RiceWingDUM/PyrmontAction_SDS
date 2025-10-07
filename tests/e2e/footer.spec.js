@@ -1,0 +1,17 @@
+// Testing Footer
+// tests/e2e/footer.spec.js
+import { test, expect } from "@playwright/test";
+
+test.describe("Footer Component", () => {
+    // Check if footer content is displayed on homepage
+    test("renders footer sections on homepage", async ({ page }) => {
+    await page.goto("http://localhost:5173/"); // replace with your dev server port
+
+    const footer = page.locator(".footer");
+    await expect(footer).toBeVisible();
+
+    await expect(footer.locator("text=Our Partners")).toBeVisible();
+    await expect(footer.locator("text=Gallery")).toBeVisible();
+    await expect(footer.locator("text=Contact Us")).toBeVisible();
+  });
+});
