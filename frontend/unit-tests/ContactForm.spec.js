@@ -25,4 +25,19 @@ describe("ContactFormSection.vue", () => {
     expect(wrapper.find("#message").exists()).toBe(true);
   });
 
+  // Confirm that contact form submission failure shows error message
+  it("shows success message when form submission succeeds", async () => {
+    contactUsAPIServices.sendInquiry.mockResolvedValueOnce({ ok: true });
+
+    await wrapper.find("#firstName").setValue("John");
+    await wrapper.find("#lastName").setValue("Doe");
+    await wrapper.find("#email").setValue("john@example.com");
+    await wrapper.find("#message").setValue("Hello, this is a test!");
+
+    await wrapper.find("form").trigger("submit.prevent");
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(wrapper.vm.submitted).toBe(true);
+    expect(wrapper.find(".success-message").exists()).toBe(true);
+  });
 });
