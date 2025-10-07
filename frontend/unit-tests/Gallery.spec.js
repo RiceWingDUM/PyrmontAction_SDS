@@ -35,4 +35,10 @@ describe("GalleryLightbox.vue", () => {
     caption: "Sample caption",
   };
 
+  it("renders lightbox when image prop is provided", () => {
+    const wrapper = mount(GalleryLightbox, { props: { image: mockImage } });
+    expect(wrapper.find(".lightbox-image").exists()).toBe(true);
+    expect(wrapper.text()).toContain("Sample caption");
+  });
+
 });
