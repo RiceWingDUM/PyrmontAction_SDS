@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import GalleryCollage from "../../frontend/src/features/gallery/components/GalleryCollage.vue";
+import GalleryLightbox from "../../frontend/src/features/gallery/components/GalleryLightbox.vue";
 
 describe("GalleryCollage.vue", () => {
   const mockImages = [
@@ -25,4 +26,13 @@ describe("GalleryCollage.vue", () => {
     expect(emitted).toBeTruthy();
     expect(emitted[0][0]).toHaveProperty("src");
   });
+});
+
+describe("GalleryLightbox.vue", () => {
+  const mockImage = {
+    src: "/images/test.jpg",
+    alt: "Test Image",
+    caption: "Sample caption",
+  };
+
 });
