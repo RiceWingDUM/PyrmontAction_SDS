@@ -6,6 +6,7 @@ import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import JoinUsForm from "../src/features/JoinUs/components/JoinUsForm.vue";
 import { createRouter, createWebHistory } from "vue-router"; // <-- Add this line
+import { vi } from "vitest";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -13,6 +14,13 @@ const router = createRouter({
     { path: "/login", component: { template: "<div>Login</div>" } },
   ],
 });
+
+// Create a mock router with a spy on push
+const mockRouter = {
+  push: vi.fn(),
+  replace: vi.fn(),
+  // add other methods if needed
+};
 
 describe("JoinUsForm.vue - Sign Up Form Validation", () => {
   it("marks password rules correctly", async () => {
@@ -60,4 +68,25 @@ describe("JoinUsForm.vue - Sign Up Form Validation", () => {
     await wrapper.find("#state").setValue("NSW");
     expect(wrapper.vm.stateChosen).to.equal("NSW");
   });
+
+  it("redirects to /login on successful registration", async () => {
+    const wrapper = mount(JoinUsForm, {
+      global: {
+        plugins: [
+          {
+            install(app) {
+              app.provide("router", mockRouter);
+            },
+          },
+        ],
+      },
+    });
+
+    await wrapper.find("#email").setValue("newuser@example.com");
+    await wrapper.find("#password").setValue("ValidPass123!");
+    await wrapper.find("#submitBtn").trigger("submit");
+
+    expect(mockRouter.push).toHaveBeenCalledWith("/login");
+  });
+
 });
