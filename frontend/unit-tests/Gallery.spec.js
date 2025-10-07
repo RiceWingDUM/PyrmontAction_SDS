@@ -8,4 +8,12 @@ describe("GalleryCollage.vue", () => {
     { _id: "2", image_file_name: "img2.jpg", alt: "Alt text 2", caption: "Caption 2" },
   ];
 
+  // Test to correct rendering of images
+  it("renders gallery images correctly", () => {
+    const wrapper = mount(GalleryCollage, { props: { images: mockImages } });
+    const images = wrapper.findAll("img");
+    expect(images.length).toBe(2);
+    expect(images[0].attributes("alt")).toBe("Alt text 1");
+  });
+
 });
