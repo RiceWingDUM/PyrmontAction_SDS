@@ -29,5 +29,41 @@ module.exports = {
         }
     },
 
+    // Update current user's profile
+    async updateCurrentUser(req, res) {
+        try {
+            // const userId = req.user._id;
+            // const allowedUpdates = ['firstName', 'lastName', 'mobilePhone', 'streetName', 'city', 'state', 'postalCode', 'postcode'];
+            
+            // // Filter only allowed fields from request body
+            // const updateData = {};
+            // allowedUpdates.forEach(field => {
+            //     if (req.body[field] !== undefined) {
+            //         updateData[field] = req.body[field];
+            //     }
+            // });
+
+            // // Handle both postalCode and postcode field names
+            // if (req.body.postalCode) {
+            //     updateData.postcode = req.body.postalCode;
+            // }
+
+            const updatedUser = await User.findByIdAndUpdate(
+                req.user._id,
+                req.body,
+                { new: true, runValidators: true }
+            );
+
+            if (!updatedUser) {
+                return res.status(404).json({ message: 'User not found.' });
+            }
+
+            return res.status(200).json(updatedUser);
+        } catch (error) {
+            console.error("Error updating user:", error);
+            return res.status(500).json({ message: 'Failed to update user.', errors: error.message });
+        }
+    },
+
 };
 
