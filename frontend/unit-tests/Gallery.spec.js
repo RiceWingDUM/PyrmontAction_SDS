@@ -50,4 +50,11 @@ describe("GalleryLightbox.vue", () => {
     expect(wrapper.text()).toContain("Sample caption");
   });
 
+  // Test handler for image load error
+  it("handles image load errors gracefully", async () => {
+    const wrapper = mount(GalleryLightbox, { props: { image: mockImage } });
+    const img = wrapper.find("img");
+    await img.trigger("error");
+    expect(img.attributes("src")).toContain("/path/to/fallback.png");
+  });
 });
