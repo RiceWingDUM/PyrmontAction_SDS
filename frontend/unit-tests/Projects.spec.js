@@ -9,10 +9,22 @@ describe("ProjectCardGrid.vue - Filtering Logic", () => {
     { _id: 3, project_name: "Urban Tree Planting", project_description: "Planting trees around Pyrmont", project_image: "tree.jpg", project_type: "open" },
   ];
 
+  // Verify all projects render by default
   it("renders all projects by default", () => {
     const wrapper = mount(ProjectCardGrid, {
       props: { projects: mockProjects },
     });
     expect(wrapper.findAll(".project-card").length).toBe(3);
+  });
+
+  // Verify filtering by project search term
+  it("filters projects by search term in name", async () => {
+    const wrapper = mount(ProjectCardGrid, { props: { projects: mockProjects } });
+    const input = wrapper.find("input");
+    await input.setValue("harbour");
+
+    const filtered = wrapper.vm.filteredProjects();
+    expect(filtered.length).toBe(1);
+    expect(filtered[0].project_name).toBe("Harbour Cleanup");
   });
 });
