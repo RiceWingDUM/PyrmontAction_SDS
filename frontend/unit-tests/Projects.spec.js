@@ -27,4 +27,12 @@ describe("ProjectCardGrid.vue - Filtering Logic", () => {
     expect(filtered.length).toBe(1);
     expect(filtered[0].project_name).toBe("Harbour Cleanup");
   });
+
+  // Test to filter projects by search term in description
+  it("filters projects by search term in description", async () => {
+    const wrapper = mount(ProjectCardGrid, { props: { projects: mockProjects } });
+    const input = wrapper.find("input");
+    await input.setValue("trees");
+    expect(wrapper.vm.filteredProjects().length).toBe(1);
+  });
 });
