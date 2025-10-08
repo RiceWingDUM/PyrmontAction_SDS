@@ -24,7 +24,7 @@ const verifyToken = async (req, res, next) => {
         
         // Add user info to request object (only what's actually in the token)
         console.log(decoded);
-        const user = await User.findById(decoded.id);
+        const user = await User.findById(decoded.id).populate('role');
         if (!user) {
             return res.status(404).json({ message: 'Not a valid user for this token' });
         }
@@ -51,7 +51,7 @@ const verifyRole = (requiredRoles) => {
 
         // If role is not present in token, fetch from DB or another source if needed
         // requiredRoles is an array for multiple allowed roles
-        if (!requiredRoles.includes(req.user.role)) {
+        if (!requiredRoles.includes(req.user.role.name)) {
             return res.status(403).json({ message: 'Forbidden: Insufficient role' });
         }
 

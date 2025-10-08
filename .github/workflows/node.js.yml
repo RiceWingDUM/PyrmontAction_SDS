@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
@@ -30,6 +30,21 @@ jobs:
 
       - name: Run E2E Tests
         run: npx playwright install; npx playwright test tests/e2e/joinUsForm.spec.js
+
+  # notify-discord:
+  #   needs: test # wait until "test" job is done
+  #   runs-on: macos-latest, windows-latest
+  #   if: always() # runs even if tests fail
+  #   steps:
+  #     - name: Send status to Discord
+  #       uses: Ilshidur/action-discord@master
+  #       with:
+  #         webhook: ${{ secrets.https://discord.com/api/webhooks/1419269299327078452/Dp793vlMik-xZNqC671_aLnKZQ9ESbfXo88pHfMF0TBpksCgGc64Qubm3wrZekfAJ3Sd/github }}
+  #         args: |
+  #           **CI/CD Update** for ${{ github.repository }}
+  #           - Commit: ${{ github.sha }}
+  #           - Branch: ${{ github.ref }}
+  #           - Status: ${{ job.status }}
 
 # name: Node.js CI
 
