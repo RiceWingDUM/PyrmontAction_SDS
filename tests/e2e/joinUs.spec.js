@@ -73,5 +73,28 @@ test('Join Us form should show errors for missing required fields', async ({ pag
   await expect(page.locator("#first-name + .error-message")).toHaveText("First name is required");
 });
 
+// Test 4: Invalid email format
+test("Join Us form should reject invalid email", async ({ page }) => {
+  await page.goto("http://localhost:5173/joinus");
+
+  await page.fill("#email", "invalidEmail.com");
+  await page.fill("#password", "ValidPass123!");
+  await page.click("#submitBtn");
+
+  await expect(page.locator("#email + .error-message")).toHaveText("Please enter a valid email address that contains '@'. For example: example@example.com");
+});
+
+// Test 5: Weak password --> Requirements stay red
+test("Password requirements turn red if not met", async ({ page }) => {
+  await page.goto("http://localhost:5173/joinus");
+
+  await page.fill("#password", "weak");
+
+  await expect(page.locator("li:has-text('At least 10 characters')")).not.toHaveClass(/password-accept/);
+  await expect(page.locator("li:has-text('At least one upper-case letter')")).not.toHaveClass(/password-accept/);
+});
+
+// Error message for Invalid mobile number: Please enter a valid mobile phone number that begins with the digits 0 and 4. For example: 0411 222 333
+
 // http://localhost:5173/member
 // 

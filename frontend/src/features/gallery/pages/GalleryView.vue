@@ -29,7 +29,7 @@ try{
 
   async function fetchData(){
       const response = await galleryService.getAllImages();
-      galleryImages.value = response.images;
+      galleryImages.value = response;
       console.log(galleryImages.value)
   }
   fetchData();
