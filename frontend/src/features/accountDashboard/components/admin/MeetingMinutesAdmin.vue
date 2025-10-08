@@ -6,12 +6,12 @@
     <div class="form">
       <div class="row">
         <label class="lbl">Title</label>
-        <input v-model="draft.title" class="input" placeholder="Enter title" />
+        <input v-model="meetingForm.title" class="input" placeholder="Enter title" />
       </div>
 
       <div class="row">
         <label class="lbl">Notes</label>
-        <textarea v-model="draft.body" class="input" rows="6" placeholder="Type the meeting notes…"></textarea>
+        <textarea v-model="meetingForm.note" class="input" rows="6" placeholder="Type the meeting notes…"></textarea>
       </div>
 
       <div class="row">
@@ -44,35 +44,35 @@
           <tr>
             <th style="width:120px;">Date</th>
             <th>Title</th>
-            <th style="width:140px;">Author</th>
             <th style="width:120px;">Status</th>
+            <th style="width:140px;">Note</th>
             <th style="width:160px;">Files</th>
             <th style="width:160px;">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="m in minutes" :key="m.id">
-            <td>{{ m.date }}</td>
-            <td>{{ m.title }}</td>
-            <td>{{ m.author }}</td>
+          <tr v-for="meeting in meetingList" :key="meeting._id">
+            <td>{{ formatDate(meeting.createdAt) }}</td>
+            <td>{{ meeting.title }}</td>
             <td>
-              <span class="badge" :class="m.status === 'published' ? 'badge-pub' : 'badge-draft'">
-                {{ m.status === 'published' ? 'Published' : 'Draft' }}
+              <span class="badge" :class="meeting.status === 'published' ? 'badge-pub' : 'badge-draft'">
+                {{ meeting.status === 'published' ? 'Published' : 'Draft' }}
               </span>
             </td>
+            <td>{{ meeting.note }}</td>
             <td>
-              <template v-if="m.files?.length">
-                <span v-for="(f, i) in m.files" :key="i" class="fileBadge">{{ shortName(f.name) }}</span>
+              <template v-if="meeting.files?.length">
+                <span v-for="(f, i) in meeting.files" :key="i" class="fileBadge">{{ shortName(f.name) }}</span>
               </template>
               <span v-else class="muted">—</span>
             </td>
             <td class="actionsCell">
-              <button class="btn sm" @click="publishItem(m)">Publish</button>
-              <button class="btn sm" @click="startEdit(m)">Edit</button>
-              <button class="btn sm danger" @click="deleteItem(m.id)">Delete</button>
+              <button class="btn sm" @click="publishItem(meeting)" v-if="meeting.status === 'draft'">Publish</button>
+              <button class="btn sm" @click="startEdit(meeting)">Edit</button>
+              <button class="btn sm danger" @click="deleteItem(meeting._id)">Delete</button>
             </td>
           </tr>
-          <tr v-if="!minutes.length">
+          <tr v-if="!meetingList.length">
             <td colspan="6" class="muted">No minutes yet.</td>
           </tr>
         </tbody>
@@ -82,66 +82,165 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed } from 'vue'
+import { reactive, ref, computed, watch, onUnmounted } from 'vue'
+import { useUserStore } from '../../../../stores/authStore'
+import services from '../../dashboardServices';
 
-const minutes = ref([
+const userStore = useUserStore();
 
-])
+
+
+const props = defineProps({
+  meetingsData: {
+    type: Array,
+    required: true
+  }
+});
+
+const emits = defineEmits(['meetingsUpdated']);
+
+const meetingList = ref([]);
+
+const meetingForm = ref({
+  _id: null,
+  title: '',
+  note: '',
+  filesUrl: "",
+  status: 'draft',
+  createdAt: null,
+})
+
+
+watch(() => props.meetingsData, (newData) => {
+  meetingList.value = newData;
+}, { immediate: true });
+
+onUnmounted(() => {
+  meetingList.value = [];
+});
+
+
 
 const draft = reactive({ id: null, title: '', body: '', files: [], status: null })
 const fileEl = ref(null)
 
-const canSave = computed(() => draft.title.trim().length > 0)
-const canPublish = computed(() => draft.title.trim().length > 0)
+const canSave = computed(() => meetingForm.value.title.trim().length > 0)
+const canPublish = computed(() => meetingForm.value.title.trim().length > 0)
 
 function pickFiles(e) {
   const files = Array.from(e.target.files || [])
   draft.files = files.map(f => ({ name: f.name }))
 }
 function removeFile(i) { draft.files.splice(i, 1) }
+
 function clearDraft() {
-  draft.id = null
-  draft.title = ''
-  draft.body = ''
-  draft.files = []
-  draft.status = null
-  if (fileEl.value) fileEl.value.value = ''
+  meetingForm.value._id = null;
+  meetingForm.value.title = '';
+  meetingForm.value.note = '';
+  meetingForm.value.filesUrl = '';
+  meetingForm.value.status = 'draft';
+  meetingForm.value.createdAt = null;
+  draft.files = [];
+  if (fileEl.value) fileEl.value.value = '';
 }
 
-function saveDraft() {
-  const base = { title: draft.title.trim(), body: draft.body.trim(), files: [...draft.files], author: 'Admin' }
-  if (draft.id) {
-    const i = minutes.value.findIndex(x => x.id === draft.id)
-    if (i > -1) minutes.value[i] = { ...minutes.value[i], ...base, status: 'draft' }
-  } else {
-    minutes.value.unshift({ id: Date.now(), date: new Date().toISOString().slice(0, 10), ...base, status: 'draft' })
+async function saveDraft() {
+  try {
+    const {createdAt, ...payload} = meetingForm.value;
+    
+    if (meetingForm.value._id) {
+      // Update existing meeting
+      const response = await services.updateMeetingMinute(userStore.getToken, meetingForm.value._id, payload);
+      const index = meetingList.value.findIndex(m => m._id === meetingForm.value._id);
+      if (index !== -1) {
+        meetingList.value[index] = { ...response };
+      }
+    } else {
+      // Create new meeting
+      const response = await services.createMeetingMinute(userStore.getToken, payload);
+      meetingForm.value._id = response._id;
+      meetingForm.value.createdAt = response.createdAt;
+      meetingList.value.push({...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt});
+    }
+    
+    emits('meetingsUpdated', meetingList.value);
+    clearDraft();
+  } catch (error) {
+    console.error('Failed to save draft:', error);
   }
-  clearDraft()
 }
 
-function publish() {
-  const base = { title: draft.title.trim(), body: draft.body.trim(), files: [...draft.files], author: 'Admin' }
-  if (draft.id) {
-    const i = minutes.value.findIndex(x => x.id === draft.id)
-    if (i > -1) minutes.value[i] = { ...minutes.value[i], ...base, status: 'published' }
-  } else {
-    minutes.value.unshift({ id: Date.now(), date: new Date().toISOString().slice(0, 10), ...base, status: 'published' })
+
+
+async function publish() {
+  try {
+    meetingForm.value.status = 'published'; // Change status to published
+    const { createdAt, ...payload } = meetingForm.value;
+    
+    if (meetingForm.value._id) {
+      // Update existing meeting and publish
+      const response = await services.updateMeetingMinute(userStore.getToken, meetingForm.value._id, payload);
+      const index = meetingList.value.findIndex(m => m._id === meetingForm.value._id);
+      if (index !== -1) {
+        meetingList.value[index] = { ...response };
+      }
+    } else {
+      // Create new meeting and publish
+      const response = await services.createMeetingMinute(userStore.getToken, payload);
+      meetingForm.value._id = response._id;
+      meetingForm.value.createdAt = response.createdAt;
+      meetingList.value.push({ ...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt });
+    }
+    
+    emits('meetingsUpdated', meetingList.value);
+    clearDraft();
+  } catch (error) {
+    console.error('Failed to publish:', error);
   }
-  clearDraft()
 }
 
-function publishItem(m) { m.status = 'published' }
-function startEdit(m) {
-  draft.id = m.id
-  draft.title = m.title
-  draft.body = m.body
-  draft.files = (m.files || []).map(f => ({ ...f }))
-  draft.status = m.status
-  if (fileEl.value) fileEl.value.value = ''
+async function publishItem(meeting) {
+  try {
+    const response = await services.publishMeetingMinute(userStore.getToken, meeting._id);
+    meeting.status = 'published';
+    emits('meetingsUpdated', meetingList.value);
+  } catch (error) {
+    console.error('Failed to publish meeting:', error);
+  }
 }
-function deleteItem(id) { minutes.value = minutes.value.filter(x => x.id !== id) }
+
+function startEdit(meeting) {
+  meetingForm.value._id = meeting._id;
+  meetingForm.value.title = meeting.title;
+  meetingForm.value.note = meeting.note;
+  meetingForm.value.filesUrl = meeting.filesUrl || '';
+  meetingForm.value.status = meeting.status;
+  meetingForm.value.createdAt = meeting.createdAt;
+  draft.files = (meeting.files || []).map(f => ({ ...f }));
+  if (fileEl.value) fileEl.value.value = '';
+}
+
+async function deleteItem(id) {
+  try {
+    await services.deleteMeetingMinute(userStore.getToken, id);
+    meetingList.value = meetingList.value.filter(x => x._id !== id);
+    emits('meetingsUpdated', meetingList.value);
+  } catch (error) {
+    console.error('Failed to delete meeting:', error);
+  }
+}
 
 function shortName(name) { return name.length > 18 ? name.slice(0, 16) + '…' : name }
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-AU', { 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  });
+}
 </script>
 
 <style scoped>

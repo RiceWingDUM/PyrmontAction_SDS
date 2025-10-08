@@ -62,7 +62,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue';
-import services from '../accountServices';
+import services from '../dashboardServices';
 import { useUserStore } from '../../../stores/authStore';
 import useVuelidate from '@vuelidate/core';
 import { required, email, minLength } from '@vuelidate/validators';
