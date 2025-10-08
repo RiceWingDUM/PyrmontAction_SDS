@@ -35,4 +35,15 @@ describe("ProjectCardGrid.vue - Filtering Logic", () => {
     await input.setValue("trees");
     expect(wrapper.vm.filteredProjects().length).toBe(1);
   });
+
+  // Verify no results lead to error message
+  it("shows 'No projects found' message when search has no results", async () => {
+    const wrapper = mount(ProjectCardGrid, { props: { projects: mockProjects } });
+    const input = wrapper.find("input");
+    await input.setValue("nonexistent");
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find(".not-found-message").exists()).toBe(true);
+    expect(wrapper.find(".not-found-message").text()).toContain("No projects found!");
+  });
 });
