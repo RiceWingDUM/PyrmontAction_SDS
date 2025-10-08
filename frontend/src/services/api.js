@@ -7,8 +7,8 @@ const api = {
         try {
             const response = await axios.get(`${server}/${endpoint}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
             });
             return response.data;
@@ -23,12 +23,42 @@ const api = {
             const response = await axios.post(`${server}/${endpoint}`, data, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': token,
+                    'Authorization': `Bearer ${token}`,
                 },
             });
             return response.data;
         } catch (error) {
             console.error('Error caused from POST Request: ' + error);
+            throw error;
+        }
+    },
+
+    async put(endpoint, data, token) {
+        try {
+            const response = await axios.put(`${server}/${endpoint}`, data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error caused from PUT Request: ' + error);
+            throw error;
+        }
+    },
+
+    async delete(endpoint, token) {
+        try {
+            const response = await axios.delete(`${server}/${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error caused from DELETE Request: ' + error);
             throw error;
         }
     },

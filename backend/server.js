@@ -5,7 +5,6 @@ const Role = require('./apps/models/roleModel');
 require('dotenv').config();
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
@@ -27,6 +26,8 @@ app.use('/api/projects', require('./apps/routes/projectRoutes'));
 app.use('/api/gallery', require('./apps/routes/galleryRoutes')); 
 app.use('/api/contact', require('./apps/routes/contactRoutes')); 
 app.use('/api/auth', require('./apps/routes/authRoutes')); 
+app.use('/api/events', require('./apps/routes/eventRoutes')); 
+app.use('/api/minutes', require('./apps/routes/meetingMinuteRoutes')); 
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

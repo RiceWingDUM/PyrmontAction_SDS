@@ -47,14 +47,14 @@ console.log('Is Authenticated:', userStore.isAuthenticated);
         <li v-if="!userStore.isAuthenticated">
           <RouterLink class="login" :to="{ name: 'Login' }">Login</RouterLink>
         </li>
-        <li v-if="userStore.isAuthenticated && userStore.role === 'member'">
-          <RouterLink class="link" :to="{ name: 'memberDashboard' }">MyAccount</RouterLink>
+        <li v-if="userStore.isAuthenticated && userStore.getRole === 'member'">
+          <RouterLink class="link" :to="{ name: 'memberDashboard' }">My Account</RouterLink>
         </li>
-        <li v-if="userStore.isAuthenticated && (userStore.role === 'admin' || userStore.role === 'editor')">
-          <RouterLink class="link" :to="{ name: 'adminDashboard' }">MyAccount</RouterLink>
+        <li v-if="userStore.isAuthenticated && (userStore.getRole === 'admin')">
+          <RouterLink class="link" :to="{ name: 'adminDashboard' }">My Account</RouterLink>
         </li>
-        <li v-if="userStore.isAuthenticated && userStore.role === 'editor'">
-          <RouterLink class="link" :to="{ name: 'editorDashboard' }">MyAccount</RouterLink>
+        <li v-if="userStore.isAuthenticated && userStore.getRole === 'editor'">
+          <RouterLink class="link" :to="{ name: 'editorDashboard' }">My Account</RouterLink>
         </li>
         <li v-if="userStore.isAuthenticated">
           <button class="link logout-btn" @click="handleLogout">Logout</button>

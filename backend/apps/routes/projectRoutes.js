@@ -25,6 +25,10 @@ router.put('/:id',
 );
 
 //Delete
-router.delete('/:id', jwtAuth.verifyRole(['admin', 'editor']),controller.deleteProject);
+router.delete('/:id', 
+    jwtAuth.verifyToken,
+    jwtAuth.verifyRole(['admin', 'editor']),
+    controller.deleteProject
+);
 
 module.exports = router;

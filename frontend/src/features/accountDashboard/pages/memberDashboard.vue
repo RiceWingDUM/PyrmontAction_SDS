@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import { useUserStore } from '../../../stores/authStore';
 import services from '../accountServices';
+import AccountDetailsComponent from '../components/AccountDetailsComponent.vue';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -12,6 +13,12 @@ const userData = ref(null);
 // Run on component mount at startup of webpage
 onMounted(async () => {
   try {
+    // Check authentication and load data
+    if (!userStore.isAuthenticated) {
+      console.warn('User not authenticated, redirecting to login.');
+      logout();
+      return;
+    }
 
     // Use token from store for API calls
     const response = await services.getCurrentUserDetails(userStore.getToken);
@@ -21,7 +28,17 @@ onMounted(async () => {
     
   } catch (error) {
     console.error('Failed to load member data:', error);
+    logout();
   }
+
+  const logout = async () => {
+    const router = useRouter();
+    const userStore = useUserStore();
+
+    // Clear token from store
+    userStore.logout();
+    await router.push('/login');
+  };
 });
 
 // Change this to fetch real data later
@@ -31,12 +48,24 @@ const minutes = ref([
   { id: 3, title: "General Meeting â€“ Sept 2025", date: "Sep 10, 2025", url: "#" }
 ])
 
-function handleEdit() {
-  router.push("/member/edit")
+function handleEditPersonalDetails() {
+  showEditModal.value = true;
 }
+
+function closeEditPersonalDetailsModal() {
+  showEditModal.value = false;
+}
+
+function handleUserUpdated(updatedUserData) {
+  userData.value = updatedUserData;
+  console.log('User updated successfully:', updatedUserData);
+}
+
 function openRenewForm() {
   alert("Open renew membership form")
 }
+
+
 
 </script>
 
@@ -56,7 +85,7 @@ function openRenewForm() {
       <section class="cards-row">
         <article class="summary-card">
           <div class="summary-head">
-            <span class="summary-icon">O</span>
+            <!-- <span class="summary-icon">O</span> -->
             <span class="summary-label">Account Type</span>
           </div>
           <div class="summary-value">{{ userStore?.getRole }}</div>
@@ -64,7 +93,7 @@ function openRenewForm() {
 
         <article class="summary-card">
           <div class="summary-head">
-            <span class="summary-icon">O</span>
+            <!-- <span class="summary-icon">O</span> -->
             <span class="summary-label">Payment Expiry</span>
           </div>
           <div class="summary-value">DD/MM/YY => Add Later</div>
@@ -73,7 +102,7 @@ function openRenewForm() {
 
         <article class="summary-card">
           <div class="summary-head">
-            <span class="summary-icon">O</span>
+            <!-- <span class="summary-icon">O</span> -->
             <span class="summary-label">Status</span>
           </div>
           <div
@@ -86,35 +115,13 @@ function openRenewForm() {
         </article>
       </section>
 
-      <!-- Member Details -->
-      <section class="details">
-        <div class="details-head">
-          <h2>Account Details</h2>
-          <p class="muted">Manage account information or passoword</p>
-          <button class="btn-edit" @click="handleEdit">O Edit</button>
-        </div>
-
-        <div class="details-grid">
-          <div class="field">
-            <label>Full Name</label>
-            <div class="field-value">{{ userData?.firstName + ' ' + userData?.lastName }}</div>
-          </div>
-          <div class="field">
-            <label>Email Address</label>
-            <div class="field-value">{{ userData?.email }}</div>
-          </div>
-          <div class="field">
-            <label>Phone Number</label>
-            <div class="field-value">{{ userData?.mobilePhone }}</div>
-          </div>
-          <div class="field">
-            <label>Address</label>
-            <div class="field-value">{{ userData?.streetName + ", " + userData?.city + ", " + userData?.state + ", " + userData?.postcode }}</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Meeting Minutes -->
+      <!-- Account Details Component -->
+      <AccountDetailsComponent 
+        v-if="userData"
+        :userData="userData"
+        @userUpdated="handleUserUpdated"
+      />
+          <!-- Meeting Minutes -->
       <section class="minutes-card">
         <div class="minutes-head">
           <div class="minutes-title">
@@ -158,6 +165,8 @@ function openRenewForm() {
         </div>
       </section>
     </main>
+
+
   </div>
 </template>
 
@@ -188,26 +197,18 @@ function openRenewForm() {
 .summary-value{ font-size:1.2rem; font-weight:800; margin:4px 0; }
 .link-btn{ border:0; background:0; color:#0ea5b7; font-weight:700; cursor:pointer; }
 
-/* details card */
-.details{
-  background:#fff; border:1px solid #e5e7eb; border-radius:16px;
-  box-shadow:0 4px 16px rgba(0,0,0,.04); padding:20px; margin-bottom:22px;
+
+
+/* pills */
+.pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 12px; border-radius:999px; font-weight:700; font-size:.95rem;
 }
-.details-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
-.details-head h2{ margin:0; font-size:1.2rem; font-weight:800; flex:1; }
-.btn-edit{
-  margin-left:auto; background:#111; color:#fff; border:0; border-radius:8px;
-  padding:6px 14px; font-weight:700; cursor:pointer;
-}
-.btn-edit:hover{ background:#333; }
-.details-grid{
-  display:grid; grid-template-columns:1fr 1fr; gap:18px;
-}
-@media(max-width:760px){ .details-grid{ grid-template-columns:1fr; } }
-.field label{ display:block; font-size:.85rem; color:#6b7280; margin-bottom:4px; }
-.field-value{
-  background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px; font-weight:600;
-}
+.pill--green{ background:#e7f7ed; color:#0a7a3f; }
+.pill--red{ background:#fdecec; color:#b42318; }
+.dot{ width:10px; height:10px; border-radius:50%; }
+.dot--green{ background:#16a34a; }
+.dot--red{ background:#ef4444; }
 
 /* minutes card */
 .minutes-card{
@@ -219,15 +220,7 @@ function openRenewForm() {
   gap:16px; margin-bottom:12px;
 }
 .minutes-title h2{ margin:0 0 4px 0; font-size:1.2rem; font-weight:800; }
-.minutes-title .muted{ margin:0; }
-
-/* "View all" button */
-.btn-all{
-  display:inline-flex; align-items:center; justify-content:center;
-  padding:8px 14px; border-radius:10px; font-weight:800; text-decoration:none;
-  color:#0ea5b7; background:#e6fbff; border:1px solid #c8f4fb;
-}
-.btn-all:hover{ filter:brightness(.98); }
+.minutes-title .muted{ margin:0; color:#6b7280; }
 
 /* table */
 .table-wrap{ overflow:auto; }
@@ -251,15 +244,4 @@ function openRenewForm() {
 }
 .btn-view:hover{ filter:brightness(.98); }
 .empty{ text-align:center; color:#64748b; }
-
-/* pills */
-.pill{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:6px 12px; border-radius:999px; font-weight:700; font-size:.95rem;
-}
-.pill--green{ background:#e7f7ed; color:#0a7a3f; }
-.pill--red{ background:#fdecec; color:#b42318; }
-.dot{ width:10px; height:10px; border-radius:50%; }
-.dot--green{ background:#16a34a; }
-.dot--red{ background:#ef4444; }
 </style>

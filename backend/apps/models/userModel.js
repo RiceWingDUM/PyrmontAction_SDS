@@ -32,6 +32,23 @@ userSchema.pre('save', async function (next) {
     }
 });
 
+// Pre-update middleware to hash password
+userSchema.pre('findOneAndUpdate', async function (next) {
+    const update = this.getUpdate();
+
+    // Check if password is being updated
+    if (update.password) {
+        try {
+            const salt = 12;
+            update.password = await bcrypt.hash(update.password, salt);
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    next();
+});
+
 // Adding static methods to the schema
 userSchema.statics.getEmailExists = async function (email) {
     const user = await this.findOne({ email });

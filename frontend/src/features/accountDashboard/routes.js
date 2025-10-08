@@ -1,6 +1,6 @@
 import memberDashboard from "./pages/memberDashboard.vue"
 import adminDashboard from "./pages/adminDashboard.vue"
-import MeetingMinutesMember from "./components/member/MeetingMinutesMember.vue" // ✅ add this line
+import MeetingMinutesMember from "./components/member/MeetingMinutesMember.vue" 
 
 export const accountRoutes = [
   {
@@ -21,7 +21,6 @@ export const accountRoutes = [
     component: adminDashboard
   },
 
-  // ✅ NEW ROUTE for the "View all" button
   {
     path: '/member/minutes',
     name: 'memberMinutes',
