@@ -3,14 +3,19 @@
     <main class="container content">
       <!-- Hero -->
       <section class="hero">
-        <h1 class="hero__title">Admin Dashboard</h1>
-        <p class="hero__sub">Welcome to the admin dashboard page.</p>
+        <h1 v-if="userStore.getRole === 'admin'" class="hero__title">Administrator's Dashboard</h1>
+        <h1 v-if="userStore.getRole === 'editor'" class="hero__title">Content Manager's Dashboard</h1>
+        <!-- <h1 class="hero__title">Administrator's Dashboard</h1> -->
+        <p v-if="activeTab === 'account'" class="hero__sub">Manage your Account Details here.</p>
+        <p v-if="activeTab === 'minutes'" class="hero__sub">Upload and manage meeting of minutes here.</p>
+        <p v-if="activeTab === 'calendar'" class="hero__sub">View and manage your events here.</p>
+        <p v-if="activeTab === 'manager'" class="hero__sub">Manage and create Accounts here.</p>
       </section>
 
       <!-- Tab buttons -->
       <div class="tabs">
         <button
-          v-for="t in tabs"
+          v-for="t in filteredTabs"
           :key="t.key"
           class="tab"
           :class="{ active: activeTab === t.key }"
@@ -47,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../../../stores/authStore'
 import services from '../accountServices'
@@ -86,12 +91,17 @@ function handleUserUpdated(updatedUserData) {
   console.log('User updated successfully:', updatedUserData)
 }
 
-const tabs = [
-  { key: 'account',  label: 'My Account' },
-  { key: 'minutes',  label: 'Meeting Minutes' },
-  { key: 'calendar', label: 'Event Calendar' },   // ← new tab
-  { key: 'manager',  label: 'Account Manager' },
-]
+const allTabs = [
+  { key: 'account', label: 'My Account', roles: ['admin', 'editor'] },
+  { key: 'minutes', label: 'Meeting Minutes', roles: ['admin'] }, // Only for admin
+  { key: 'calendar', label: 'Event Calendar', roles: ['admin'] }, // Only for admin
+  { key: 'manager', label: 'Account Manager', roles: ['admin'] }, // Only for admin
+];
+
+// Filter tabs based on user role
+const filteredTabs = computed(() => {
+  return allTabs.filter(tab => tab.roles.includes(userStore.getRole));
+});
 
 // Change default tab here if you want:
 const activeTab = ref('account') // e.g. 'minutes' to open Minutes by default

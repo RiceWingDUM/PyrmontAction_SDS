@@ -33,7 +33,7 @@
         </div>
         <div class="field">
           <label>Last Name</label>
-          <div class="field-value">{{ userData?.lastName }}</div>
+          <div class="field-value">{{ userData?.lastName}}</div>
         </div>
         <div class="field">
           <label>Phone Number</label>
