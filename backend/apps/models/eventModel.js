@@ -7,7 +7,13 @@ const eventSchema = new mongoose.Schema(
     location: String,
     startDate: { type: Date, required: true },
     endDate: Date,
-    imageUrl: String,
+    imageUrl: String, // URL or filename for the event image/file
+    originalFileName: String, // Store original filename for display
+    fileType: { 
+      type: String, 
+      enum: ['static', 'uploaded'], 
+      default: 'static' 
+    },
     status: { type: String, enum: ['draft', 'upcoming', 'cancelled', 'completed'], default: 'draft' },
   },
   { timestamps: true }

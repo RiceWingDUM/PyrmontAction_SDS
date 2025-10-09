@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const ctrl = require('../controllers/meetingMinuteController');
-const { upload } = require('../middlewares/upload');
+const { upload } = require('../middlewares/fileUpload');
 const jwtAuth = require('../middlewares/jwtMiddleware');
 
 // Public
@@ -16,12 +16,20 @@ router.get('/published',
     ctrl.getPublishedMeeting
 );
 
-// Protected
-router.post('/upload', 
+// Protected - Create meeting minute (with optional file upload)
+router.post('/', 
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin']), 
-    // upload.single('pdf'), 
+    upload.meetingMinuteFile, 
     ctrl.createMeeting
+);
+
+// Upload file to existing meeting minute
+router.post('/:id/upload', 
+    jwtAuth.verifyToken, 
+    jwtAuth.verifyRole(['admin']), 
+    upload.meetingMinuteFile, 
+    ctrl.uploadFile
 );
 
 router.patch('/:id/publish', 

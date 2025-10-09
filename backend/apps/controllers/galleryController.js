@@ -1,13 +1,65 @@
-const Gallery = require('../models/galleryModel')
+const Gallery = require('../models/galleryModel');
+
 module.exports = {
-    // Create
-    async uploadGalleryImage(req, res){
-        try { 
-            const newImage = new Gallery(req.body);
-            await newImage.save();
-            res.status(201).json(newImage);
-        } catch(error) {
-            return res.status(400).json({error: 'Error uploading image'});
+    // Upload single gallery image
+    async uploadGalleryImage(req, res) {
+        try {
+            const { caption, alt } = req.body;
+            
+            if (!req.file) {
+                return res.status(400).json({ error: 'No image uploaded' });
+            }
+
+            // Create gallery image record
+            const galleryImage = new Gallery({
+                image_file_name: req.file.filename,
+                image_type: 'uploaded',
+                caption: caption || '',
+                alt: alt || req.file.originalname
+            });
+
+            await galleryImage.save();
+
+            res.status(201).json({
+                message: 'Image uploaded successfully',
+                image: galleryImage
+            });
+        } catch (error) {
+            console.error('Error uploading gallery image:', error);
+            return res.status(400).json({ error: 'Error uploading image' });
+        }
+    },
+
+    // Upload multiple gallery images
+    async uploadMultipleGalleryImages(req, res) {
+        try {
+            if (!req.files || req.files.length === 0) {
+                return res.status(400).json({ error: 'No images uploaded' });
+            }
+
+            const uploadResults = [];
+
+            for (const file of req.files) {
+                // Create gallery image record
+                const galleryImage = new Gallery({
+                    image_file_name: file.filename,
+                    image_type: 'uploaded',
+                    caption: '',
+                    alt: file.originalname
+                });
+
+                await galleryImage.save();
+
+                uploadResults.push({ image: galleryImage });
+            }
+
+            res.status(201).json({
+                message: `${uploadResults.length} images uploaded successfully`,
+                results: uploadResults
+            });
+        } catch (error) {
+            console.error('Error uploading gallery images:', error);
+            return res.status(400).json({ error: 'Error uploading images' });
         }
     },
 

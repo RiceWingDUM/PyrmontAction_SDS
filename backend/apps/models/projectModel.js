@@ -10,11 +10,6 @@ const projectSchema = new mongoose.Schema({
     enum: ['static', 'uploaded'], 
     default: 'static' 
   }, // Indicates if image is static asset or uploaded file
-  uploaded_file_id: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'UploadedFile',
-    required: false 
-  }, // Reference to uploaded file if applicable
   project_date: { type: Date, default: Date.now }
 }, { timestamps: true });
 

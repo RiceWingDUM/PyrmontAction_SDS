@@ -7,11 +7,6 @@ const galleryImageSchema = new mongoose.Schema({
     enum: ['static', 'uploaded'], 
     default: 'static' 
   }, // Indicates if image is static asset or uploaded file
-  uploaded_file_id: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'UploadedFile',
-    required: false 
-  }, // Reference to uploaded file if applicable
   caption: { type: String },
   alt: { type: String }
 }, { timestamps: true });
