@@ -15,14 +15,14 @@
       </div>
 
       <div class="row">
-        <label class="lbl">Attach PDF(s)</label>
+        <label class="lbl">Attach PDF</label>
         <div class="fileZone">
           <input ref="fileEl" type="file" accept="application/pdf" @change="chooseFile" />
           <div v-if="meetingForm.file" class="fileList">
             <span class="chip-name">📄 {{ meetingForm.file.name }}</span>
             <button class="chip-x" title="Remove" @click="removeFile">×</button>
           </div>
-          <div v-else class="hint">Select one or more PDF files…</div>
+          <div v-else class="hint">Select a PDF file…</div>
         </div>
       </div>
 
@@ -59,8 +59,8 @@
             </td>
             <td>{{ meeting.note }}</td>
             <td>
-              <template v-if="meeting.files?.length">
-                <span v-for="(f, i) in meeting.files" :key="i" class="fileBadge">{{ shortName(f.name) }}</span>
+              <template v-if="meeting.file">
+                <span class="fileBadge">{{meeting.filename}}</span>
               </template>
               <span v-else class="muted">—</span>
             </td>
@@ -136,6 +136,7 @@ const canPublish = computed(() => meetingForm.value.title.trim().length > 0)
 function chooseFile(e) {
   const file = e.target.files[0]; // Access the first file directly
   meetingForm.value.file = file; // Assign the single file to the form
+  console.log('File selected:', file); // Debug log
 }
 function removeFile() { 
     if (fileEl.value) {
@@ -162,10 +163,15 @@ async function saveDraft() {
     formData.append('note', meetingForm.value.note);
     formData.append('status', meetingForm.value.status);
     
-    // Append PDF files if any
-    draft.files.forEach((file) => {
-      formData.append('file', file); // Use 'file' as the field name (matches backend)
-    });
+    // Append PDF file if selected
+    if (meetingForm.value.file) {
+      formData.append('file', meetingForm.value.file); // Use 'file' as the field name (matches backend)
+      console.log('File appended to FormData:', meetingForm.value.file.name); // Debug log
+    } else {
+      console.log('No file selected for saveDraft'); // Debug log
+    }
+
+    console.log('FormData entries for saveDraft:', [...formData.entries()]); // Debug log
 
     // Create new meeting with files
     const response = await services.createMeetingMinute(userStore.getToken, formData);
@@ -200,13 +206,18 @@ async function publish() {
     formData.append('note', meetingForm.value.note);
     formData.append('status', 'published'); // Set status to published
     
-    // Append PDF files if any
-    draft.files.forEach((file) => {
-      formData.append('file', file); // Use 'file' as the field name (matches backend)
-    });
+    // Append PDF file if selected
+    if (meetingForm.value.file) {
+      formData.append('file', meetingForm.value.file); // Use 'file' as the field name (matches backend)
+      console.log('File appended to FormData:', meetingForm.value.file.name); // Debug log
+    } else {
+      console.log('No file selected for publish'); // Debug log
+    }
+
+    console.log('FormData entries for publish:', [...formData.entries()]); // Debug log
 
     // Create new meeting with files
-    const response = await services.createMeetingMinuteWithFiles(userStore.getToken, formData);
+    const response = await services.createMeetingMinute(userStore.getToken, formData);
     meetingForm.value._id = response._id;
     meetingForm.value.createdAt = response.createdAt;
     

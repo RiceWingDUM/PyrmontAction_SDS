@@ -3,23 +3,23 @@ const MeetingMinute = require('../models/meetingMinuteModel');
 module.exports = {
   // Create meeting minute with optional file upload
   async createMeeting(req, res) {
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file);
     try {
-      const { title, meetingDate, note } = req.body;
+      const { title, note, status } = req.body;
       
       // Create meeting minute data
       const meetingData = {
         title,
-        meetingDate,
         note,
-        status: 'draft'
+        status
       };
 
       // If file was uploaded, process it
       if (req.file) {
         // Add file info to meeting minute
         meetingData.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
-        meetingData.originalFileName = req.file.originalname;
-        meetingData.fileType = 'uploaded';
+        meetingData.filename = req.file.filename;
       }
 
       const minutes = new MeetingMinute(meetingData);

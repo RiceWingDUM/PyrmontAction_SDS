@@ -103,7 +103,7 @@ const uploadConfigs = {
     storage: createStorage('meetingMinutes'),
     limits: { fileSize: 15 * 1024 * 1024 }, // 15MB
     fileFilter: pdfFilter,
-  }).single('meetingMinuteFile'),
+  }).single('file'),
 
   // Event uploads (images and documents)
   eventFile: multer({
