@@ -40,4 +40,18 @@ test.describe("Carousel UI Behavior", () => {
         // Assert that the first dot is active again
         await expect(firstActive).toBeVisible();
     });
+
+    test("should cycle back to first slide after last", async ({ page }) => {
+        const rightArrow = page.locator(".toggle-page.right i");
+
+        // Click enough times to loop
+        await rightArrow.click();
+        await rightArrow.click();
+        await rightArrow.click();
+
+        const firstActive = page.locator(".pagination span.active:nth-child(1)");
+
+        // Assert that the first dot is active again
+        await expect(firstActive).toBeVisible();
+    });
 });
