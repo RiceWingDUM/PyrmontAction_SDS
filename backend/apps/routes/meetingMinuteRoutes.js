@@ -23,6 +23,7 @@ router.post('/upload',
     // upload.single('pdf'), 
     ctrl.createMeeting
 );
+
 router.patch('/:id/publish', 
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin']), 
@@ -35,6 +36,13 @@ router.put('/:id',
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin']), 
     ctrl.updateMeeting
+);
+
+// Route to delete an existing meeting minute
+router.delete('/:id', 
+    jwtAuth.verifyToken, 
+    jwtAuth.verifyRole(['admin']), 
+    ctrl.deleteMeeting
 );
 
 module.exports = router;

@@ -61,10 +61,19 @@ module.exports = {
         { new: true }
       );
       if (!updatedMeeting) return res.status(404).json({ message: 'Not found' });
-      res.json(updatedMinute);
+      res.json(updatedMeeting);
     } catch (err) {
       res.status(400).json({ message: err.message });
     }
   },
-
+  
+  async deleteMeeting(req, res) {
+    try {
+      const deletedMeeting = await MeetingMinute.findByIdAndDelete(req.params.id);
+      if (!deletedMeeting) return res.status(404).json({ message: 'Meeting not found' });
+      res.status(200).json({ message: 'Meeting deleted successfully' });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
 };

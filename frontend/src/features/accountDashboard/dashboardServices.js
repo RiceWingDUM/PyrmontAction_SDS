@@ -7,7 +7,7 @@ const dashboardServices = {
     getPublishedMeetingMinutes(token){ return api.get("api/minutes/published", token);},
     createMeetingMinute(token, meetingData){ return api.post("api/minutes/upload", meetingData, token);},
     updateMeetingMinute(token, id, meetingData){ return api.put(`api/minutes/${id}`, meetingData, token);},
-    publishMeetingMinute(token, id){ return api.patch(`api/minutes/${id}/publish`, {}, token);},
+    publishMeetingMinute(token, id, meetingData){ return api.patch(`api/minutes/${id}/publish`, meetingData, token);},
     deleteMeetingMinute(token, id){ return api.delete(`api/minutes/${id}`, token);}
 }
 

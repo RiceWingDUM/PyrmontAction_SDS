@@ -7,8 +7,8 @@ const api = {
         try {
             const response = await axios.get(`${server}/${endpoint}`, {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
             return response.data;
@@ -22,8 +22,8 @@ const api = {
         try {
             const response = await axios.post(`${server}/${endpoint}`, data, {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
             return response.data;
@@ -37,8 +37,8 @@ const api = {
         try {
             const response = await axios.put(`${server}/${endpoint}`, data, {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
             return response.data;
@@ -48,15 +48,30 @@ const api = {
         }
     },
 
+    async patch(endpoint, data, token) {
+        try {
+            const response = await axios.patch(`${server}/${endpoint}`, data, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error caused from PATCH Request: ' + error);
+            throw error;
+        }
+    },
+
     async delete(endpoint, token) {
         try {
             const response = await axios.delete(`${server}/${endpoint}`, {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
-            return response.data;
+            return true;
         } catch (error) {
             console.error('Error caused from DELETE Request: ' + error);
             throw error;

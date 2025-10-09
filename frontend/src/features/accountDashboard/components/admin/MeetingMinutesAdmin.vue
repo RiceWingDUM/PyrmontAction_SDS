@@ -78,6 +78,13 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Edit Modal -->
+    <EditMeetingsAdmin 
+      :meeting="selectedMeeting" 
+      @meetingUpdated="updateMeeting" 
+      @closeModal="closeEditModal" 
+    />
   </div>
 </template>
 
@@ -85,6 +92,7 @@
 import { reactive, ref, computed, watch, onUnmounted } from 'vue'
 import { useUserStore } from '../../../../stores/authStore'
 import services from '../../dashboardServices';
+import EditMeetingsAdmin from './EditMeetingsAdmin.vue';
 
 const userStore = useUserStore();
 
@@ -148,22 +156,17 @@ async function saveDraft() {
   try {
     const {createdAt, ...payload} = meetingForm.value;
     
-    if (meetingForm.value._id) {
-      // Update existing meeting
-      const response = await services.updateMeetingMinute(userStore.getToken, meetingForm.value._id, payload);
-      const index = meetingList.value.findIndex(m => m._id === meetingForm.value._id);
-      if (index !== -1) {
-        meetingList.value[index] = { ...response };
-      }
-    } else {
-      // Create new meeting
-      const response = await services.createMeetingMinute(userStore.getToken, payload);
-      meetingForm.value._id = response._id;
-      meetingForm.value.createdAt = response.createdAt;
-      meetingList.value.push({...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt});
-    }
-    
+
+    // Create new meeting
+    const response = await services.createMeetingMinute(userStore.getToken, payload);
+    meetingForm.value._id = response._id;
+    meetingForm.value.createdAt = response.createdAt;
+    meetingList.value.push({...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt});
+  
+    console.log('Created new meeting:', response);
+    console.log('Created new meeting:', meetingList.value);
     emits('meetingsUpdated', meetingList.value);
+
     clearDraft();
   } catch (error) {
     console.error('Failed to save draft:', error);
@@ -176,23 +179,16 @@ async function publish() {
   try {
     meetingForm.value.status = 'published'; // Change status to published
     const { createdAt, ...payload } = meetingForm.value;
-    
-    if (meetingForm.value._id) {
-      // Update existing meeting and publish
-      const response = await services.updateMeetingMinute(userStore.getToken, meetingForm.value._id, payload);
-      const index = meetingList.value.findIndex(m => m._id === meetingForm.value._id);
-      if (index !== -1) {
-        meetingList.value[index] = { ...response };
-      }
-    } else {
-      // Create new meeting and publish
-      const response = await services.createMeetingMinute(userStore.getToken, payload);
-      meetingForm.value._id = response._id;
-      meetingForm.value.createdAt = response.createdAt;
-      meetingList.value.push({ ...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt });
-    }
-    
+    // Create new meeting
+    const response = await services.createMeetingMinute(userStore.getToken, payload);
+    meetingForm.value._id = response._id;
+    meetingForm.value.createdAt = response.createdAt;
+    meetingList.value.push({...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt});
+  
+    console.log('Created new meeting:', response);
+    console.log('Created new meeting:', meetingList.value);
     emits('meetingsUpdated', meetingList.value);
+    
     clearDraft();
   } catch (error) {
     console.error('Failed to publish:', error);
@@ -201,30 +197,49 @@ async function publish() {
 
 async function publishItem(meeting) {
   try {
-    const response = await services.publishMeetingMinute(userStore.getToken, meeting._id);
-    meeting.status = 'published';
+    if (!meeting || !meeting._id) {
+      throw new Error('Meeting ID is required');
+    }
+
+    const response = await services.publishMeetingMinute(userStore.getToken, meeting._id, {status: 'published'});
+
+    const index = meetingList.value.findIndex(m => m._id === meeting._id);
+    if (index !== -1) {
+      meetingList.value[index].status = 'published';
+    }
+
     emits('meetingsUpdated', meetingList.value);
   } catch (error) {
     console.error('Failed to publish meeting:', error);
   }
 }
 
+const selectedMeeting = ref(null);
+
 function startEdit(meeting) {
-  meetingForm.value._id = meeting._id;
-  meetingForm.value.title = meeting.title;
-  meetingForm.value.note = meeting.note;
-  meetingForm.value.filesUrl = meeting.filesUrl || '';
-  meetingForm.value.status = meeting.status;
-  meetingForm.value.createdAt = meeting.createdAt;
-  draft.files = (meeting.files || []).map(f => ({ ...f }));
-  if (fileEl.value) fileEl.value.value = '';
+  selectedMeeting.value = meeting;
+}
+
+function closeEditModal() {
+  selectedMeeting.value = null;
+}
+
+function updateMeeting(updatedMeeting) {
+  const index = meetingList.value.findIndex(m => m._id === updatedMeeting._id);
+  if (index !== -1) {
+    meetingList.value[index] = { ...meetingList.value[index], ...updatedMeeting };
+  }
+  emits('meetingsUpdated', meetingList.value);
+  closeEditModal();
 }
 
 async function deleteItem(id) {
   try {
-    await services.deleteMeetingMinute(userStore.getToken, id);
-    meetingList.value = meetingList.value.filter(x => x._id !== id);
-    emits('meetingsUpdated', meetingList.value);
+    if (confirm('Are you sure you want to delete this meeting minute?')) {
+      await services.deleteMeetingMinute(userStore.getToken, id);
+      meetingList.value = meetingList.value.filter(m => m._id !== id);
+      emits('meetingsUpdated', meetingList.value);
+    }
   } catch (error) {
     console.error('Failed to delete meeting:', error);
   }
