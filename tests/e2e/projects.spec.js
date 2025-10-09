@@ -20,13 +20,13 @@ test.describe("Projects Page - Search Functionality", () => {
     // Verify if search input filters projects correctly
     test("filters projects based on search input", async ({ page }) => {
         const searchBox = page.locator("input.textbox");
-        await searchBox.fill("cleanup");
+        await searchBox.fill("Powerhouse Museum");
 
         const cards = page.locator(".project-card");
 
         // Assert that only relevant project cards are displayed
         await expect(cards).toHaveCount(1);
-        await expect(cards.first().locator(".project-card__title")).toContainText("Cleanup");
+        await expect(cards.first().locator(".project-card__title")).toContainText("Powerhouse Museum Redevelopment");
     });
 
     // Test to check if no projects found message appears for unmatched project search term
