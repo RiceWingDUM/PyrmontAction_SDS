@@ -16,4 +16,16 @@ test.describe("Projects Page - Search Functionality", () => {
         expect(cardCount).toBeGreaterThan(0);
         // await expect(cards).toHaveCountGreaterThan(0);
     });
+
+    // Verify if search input filters projects correctly
+    test("filters projects based on search input", async ({ page }) => {
+        const searchBox = page.locator("input.textbox");
+        await searchBox.fill("cleanup");
+
+        const cards = page.locator(".project-card");
+
+        // Assert that only relevant project cards are displayed
+        await expect(cards).toHaveCount(1);
+        await expect(cards.first().locator(".project-card__title")).toContainText("Cleanup");
+    });
 });
