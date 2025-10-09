@@ -38,4 +38,15 @@ test.describe("Projects Page - Search Functionality", () => {
         await expect(page.locator(".not-found-message")).toBeVisible();
         await expect(page.locator(".not-found-message")).toContainText("No projects found");
     });
+
+    // Verify navigation to project detail page on clicking Learn More link
+    test("navigates to the project detail page when clicking Learn More", async ({ page }) => {
+        const firstCard = page.locator(".project-card").first();
+        const learnMoreLink = firstCard.locator(".project-card__link");
+
+        await learnMoreLink.click();
+
+        // Assert that the URL has changed to the project detail page
+        await expect(page).toHaveURL(/projects\/[a-z]+\/[0-9a-fA-F]+/);
+    });
 });
