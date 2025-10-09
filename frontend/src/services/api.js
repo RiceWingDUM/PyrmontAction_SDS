@@ -33,21 +33,6 @@ const api = {
         }
     },
 
-    async postFormData(endpoint, formData, token) {
-        try {
-            const response = await axios.post(`${server}/${endpoint}`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Error caused from FormData POST Request: ' + error);
-            throw error;
-        }
-    },
-
     async put(endpoint, data, token) {
         try {
             const response = await axios.put(`${server}/${endpoint}`, data, {
@@ -89,6 +74,36 @@ const api = {
             return true;
         } catch (error) {
             console.error('Error caused from DELETE Request: ' + error);
+            throw error;
+        }
+    },
+
+    async postFormData(endpoint, formData, token) {
+        try {
+            const response = await axios.post(`${server}/${endpoint}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error caused from FormData POST Request: ' + error);
+            throw error;
+        }
+    },
+
+    async putFormData(endpoint, formData, token) {
+        try {
+            const response = await axios.put(`${server}/${endpoint}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error caused from FormData PUT Request: ' + error);
             throw error;
         }
     },

@@ -17,12 +17,10 @@
       <div class="row">
         <label class="lbl">Attach PDF(s)</label>
         <div class="fileZone">
-          <input ref="fileEl" type="file" accept="application/pdf" multiple @change="pickFiles" />
-          <div v-if="draft.files.length" class="fileList">
-            <div v-for="(f,i) in draft.files" :key="i" class="chip">
-              <span class="chip-name">📄 {{ f.name }}</span>
-              <button class="chip-x" title="Remove" @click="removeFile(i)">×</button>
-            </div>
+          <input ref="fileEl" type="file" accept="application/pdf" @change="chooseFile" />
+          <div v-if="meetingForm.file" class="fileList">
+            <span class="chip-name">📄 {{ meetingForm.file.name }}</span>
+            <button class="chip-x" title="Remove" @click="removeFile">×</button>
           </div>
           <div v-else class="hint">Select one or more PDF files…</div>
         </div>
@@ -113,7 +111,7 @@ const meetingForm = ref({
   _id: null,
   title: '',
   note: '',
-  filesUrl: "",
+  file: null,
   status: 'draft',
   createdAt: null,
 })
@@ -135,36 +133,55 @@ const fileEl = ref(null)
 const canSave = computed(() => meetingForm.value.title.trim().length > 0)
 const canPublish = computed(() => meetingForm.value.title.trim().length > 0)
 
-function pickFiles(e) {
-  const files = Array.from(e.target.files || [])
-  draft.files = files.map(f => ({ name: f.name }))
+function chooseFile(e) {
+  const file = e.target.files[0]; // Access the first file directly
+  meetingForm.value.file = file; // Assign the single file to the form
 }
-function removeFile(i) { draft.files.splice(i, 1) }
+function removeFile() { 
+    if (fileEl.value) {
+      fileEl.value.value = ''; // Reset the file input element
+    }
+    meetingForm.value.file = null;
+}
 
 function clearDraft() {
   meetingForm.value._id = null;
   meetingForm.value.title = '';
   meetingForm.value.note = '';
-  meetingForm.value.filesUrl = '';
+  meetingForm.value.file = null;
   meetingForm.value.status = 'draft';
   meetingForm.value.createdAt = null;
-  draft.files = [];
   if (fileEl.value) fileEl.value.value = '';
 }
 
 async function saveDraft() {
   try {
-    const {createdAt, ...payload} = meetingForm.value;
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('title', meetingForm.value.title);
+    formData.append('note', meetingForm.value.note);
+    formData.append('status', meetingForm.value.status);
     
+    // Append PDF files if any
+    draft.files.forEach((file) => {
+      formData.append('file', file); // Use 'file' as the field name (matches backend)
+    });
 
-    // Create new meeting
-    const response = await services.createMeetingMinute(userStore.getToken, payload);
+    // Create new meeting with files
+    const response = await services.createMeetingMinute(userStore.getToken, formData);
     meetingForm.value._id = response._id;
     meetingForm.value.createdAt = response.createdAt;
-    meetingList.value.push({...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt});
+
+    
+    const newMeeting = {
+      ...meetingForm.value,
+      _id: response._id,
+      createdAt: response.createdAt
+    };
+    
+    meetingList.value.push(newMeeting);
   
     console.log('Created new meeting:', response);
-    console.log('Created new meeting:', meetingList.value);
     emits('meetingsUpdated', meetingList.value);
 
     clearDraft();
@@ -177,16 +194,34 @@ async function saveDraft() {
 
 async function publish() {
   try {
-    meetingForm.value.status = 'published'; // Change status to published
-    const { createdAt, ...payload } = meetingForm.value;
-    // Create new meeting
-    const response = await services.createMeetingMinute(userStore.getToken, payload);
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('title', meetingForm.value.title);
+    formData.append('note', meetingForm.value.note);
+    formData.append('status', 'published'); // Set status to published
+    
+    // Append PDF files if any
+    draft.files.forEach((file) => {
+      formData.append('file', file); // Use 'file' as the field name (matches backend)
+    });
+
+    // Create new meeting with files
+    const response = await services.createMeetingMinuteWithFiles(userStore.getToken, formData);
     meetingForm.value._id = response._id;
     meetingForm.value.createdAt = response.createdAt;
-    meetingList.value.push({...payload, _id: meetingForm.value._id, createdAt: meetingForm.value.createdAt});
+    
+    const newMeeting = {
+      ...meetingForm.value,
+      status: 'published',
+      _id: response._id,
+      createdAt: response.createdAt,
+      fileUrl: response.fileUrl || null,
+      fileType: response.fileType || null
+    };
+    
+    meetingList.value.push(newMeeting);
   
     console.log('Created new meeting:', response);
-    console.log('Created new meeting:', meetingList.value);
     emits('meetingsUpdated', meetingList.value);
     
     clearDraft();
