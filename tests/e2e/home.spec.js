@@ -54,4 +54,15 @@ test.describe("Carousel UI Behavior", () => {
         // Assert that the first dot is active again
         await expect(firstActive).toBeVisible();
     });
+
+    // Test workflow functionality of random click on dot navigation
+    test("should jump to correct slide when pagination dot is clicked", async ({ page }) => {
+        const secondDot = page.locator(".pagination span:nth-child(2)");
+        await secondDot.click();
+
+        const secondActive = page.locator(".pagination span.active:nth-child(2)");
+
+        // Assert that the second dot is active
+        await expect(secondActive).toBeVisible();
+    });
 });
