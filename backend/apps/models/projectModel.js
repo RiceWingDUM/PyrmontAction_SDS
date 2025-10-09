@@ -4,7 +4,12 @@ const projectSchema = new mongoose.Schema({
   project_name: { type: String, required: true },
   project_description: { type: String, required: true },
   project_type: { type: String, enum: ['open', 'closed'], default: 'open' },
-  project_image: { type: String, required: true },
+  project_image: { type: String, required: true }, // Can be filename or uploaded file URL
+  project_image_type: { 
+    type: String, 
+    enum: ['static', 'uploaded'], 
+    default: 'static' 
+  }, // Indicates if image is static asset or uploaded file
   project_date: { type: Date, default: Date.now }
 }, { timestamps: true });
 

@@ -1,16 +1,26 @@
 const Project = require('../models/projectModel');
 
 module.exports = {
-    // Create
+    // Create project with optional image upload
     async createProject(req, res) {
         try {
-            const { project_name, project_description, project_image, project_date } = req.body;
+            const { project_name, project_description, project_date } = req.body;
             
-            const newProject = new Project({
-                project_name, project_description, 
-                project_image, project_date
-            });
+            // Create project data
+            const projectData = {
+                project_name,
+                project_description,
+                project_date: project_date || new Date()
+            };
+
+            // If image was uploaded, process it
+            if (req.file) {
+                // Add image info to project
+                projectData.project_image = req.file.filename;
+                projectData.project_image_type = 'uploaded';
+            }
             
+            const newProject = new Project(projectData);
             await newProject.save();
 
             return res.status(201).json({
@@ -20,6 +30,35 @@ module.exports = {
         } catch (error) {
             console.error('Error creating project:', error);
             return res.status(500).json({ error: 'Error creating project' });
+        }
+    },
+
+    // Upload image to existing project
+    async uploadProjectImage(req, res) {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ message: 'No image uploaded' });
+            }
+
+            const projectId = req.params.id;
+            const project = await Project.findById(projectId);
+            
+            if (!project) {
+                return res.status(404).json({ message: 'Project not found' });
+            }
+
+            // Update project with image info
+            project.project_image = req.file.filename;
+            project.project_image_type = 'uploaded';
+
+            await project.save();
+
+            res.status(200).json({
+                message: 'Image uploaded successfully',
+                project: project
+            });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
         }
     }, 
 

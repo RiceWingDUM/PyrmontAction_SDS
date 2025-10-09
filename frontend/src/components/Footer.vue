@@ -58,7 +58,7 @@ const images = ref([])
 try{
     async function fetchData(){
         const response = await galleryService.getAllImages();
-        images.value = response.images.slice(-8);
+        images.value = response.slice(-8);
         console.log(images.value)
     }
     fetchData();

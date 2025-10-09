@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import { useUserStore } from '../../../stores/authStore';
-import services from '../accountServices';
+import services from '../dashboardServices';
 import AccountDetailsComponent from '../components/AccountDetailsComponent.vue';
 
 const router = useRouter();
@@ -48,13 +48,6 @@ const minutes = ref([
   { id: 3, title: "General Meeting â€“ Sept 2025", date: "Sep 10, 2025", url: "#" }
 ])
 
-function handleEditPersonalDetails() {
-  showEditModal.value = true;
-}
-
-function closeEditPersonalDetailsModal() {
-  showEditModal.value = false;
-}
 
 function handleUserUpdated(updatedUserData) {
   userData.value = updatedUserData;

@@ -42,7 +42,11 @@
         </div>
 
       <div v-else-if="activeTab === 'minutes'">
-        <MeetingMinutesAdmin />
+        <MeetingMinutesAdmin 
+            v-if="meetingsData" 
+            :meetingsData="meetingsData"
+            @meetingsUpdated="handleMeetingsUpdated"
+        />
       </div>
 
       <div v-else-if="activeTab === 'calendar'">
@@ -61,7 +65,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../../../stores/authStore'
-import services from '../accountServices'
+import services from '../dashboardServices'
 import MeetingMinutesAdmin from '../components/admin/MeetingMinutesAdmin.vue'
 import EventCalendarAdmin from '../components/admin/EventCalendarAdmin.vue'
 import AccountDetailsComponent from '../components/AccountDetailsComponent.vue'
@@ -69,6 +73,7 @@ import AccountDetailsComponent from '../components/AccountDetailsComponent.vue'
 const router = useRouter()
 const userStore = useUserStore()
 const userData = ref(null)
+const meetingsData = ref([])
 
 // Load user data on mount
 onMounted(async () => {
@@ -79,8 +84,11 @@ onMounted(async () => {
       return
     }
 
-    const response = await services.getCurrentUserDetails(userStore.getToken)
-    userData.value = response
+    const fetchUserData = await services.getCurrentUserDetails(userStore.getToken)
+    userData.value = fetchUserData
+
+    const fetchMeetingsData = await services.getAllMeetingMinutes(userStore.getToken)
+    meetingsData.value = fetchMeetingsData
   } catch (error) {
     console.error('Failed to load admin data:', error)
     logout()
@@ -95,6 +103,11 @@ const logout = async () => {
 function handleUserUpdated(updatedUserData) {
   userData.value = updatedUserData
   console.log('User updated successfully:', updatedUserData)
+}
+
+function handleMeetingsUpdated(updatedMeetingsData) {
+    meetingsData.value = updatedMeetingsData
+    console.log('Meetings updated successfully:', updatedMeetingsData)
 }
 
 const allTabs = [
