@@ -19,7 +19,7 @@ module.exports = {
       if (req.file) {
         // Add file info to meeting minute
         meetingData.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
-        meetingData.filename = req.file.filename;
+        meetingData.filename = req.file.originalname;
       }
 
       const minutes = new MeetingMinute(meetingData);

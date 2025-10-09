@@ -27,8 +27,8 @@
       </div>
 
       <div class="actions">
-        <button class="btn" :disabled="!canSave" @click="saveDraft">Save Draft</button>
-        <button class="btn primary" :disabled="!canPublish" @click="publish">Publish</button>
+        <button class="btn" :disabled="!canSave" @click="create('draft')">Save Draft</button>
+        <button class="btn primary" :disabled="!canPublish" @click="create('published')">Publish</button>
         <button class="btn" @click="clearDraft">Clear</button>
       </div>
     </div>
@@ -59,8 +59,8 @@
             </td>
             <td>{{ meeting.note }}</td>
             <td>
-              <template v-if="meeting.file">
-                <span class="fileBadge">{{meeting.filename}}</span>
+              <template v-if="meeting.filename">
+                <span class="fileBadge">{{shortName(meeting.filename)}}</span>
               </template>
               <span v-else class="muted">—</span>
             </td>
@@ -113,6 +113,7 @@ const meetingForm = ref({
   note: '',
   file: null,
   status: 'draft',
+  filename: "",
   createdAt: null,
 })
 
@@ -155,8 +156,9 @@ function clearDraft() {
   if (fileEl.value) fileEl.value.value = '';
 }
 
-async function saveDraft() {
+async function create(status) {
   try {
+    meetingForm.value.status = status;
     // Create FormData for file upload
     const formData = new FormData();
     formData.append('title', meetingForm.value.title);
@@ -168,15 +170,16 @@ async function saveDraft() {
       formData.append('file', meetingForm.value.file); // Use 'file' as the field name (matches backend)
       console.log('File appended to FormData:', meetingForm.value.file.name); // Debug log
     } else {
-      console.log('No file selected for saveDraft'); // Debug log
+      console.log('No file selected for create'); // Debug log
     }
 
-    console.log('FormData entries for saveDraft:', [...formData.entries()]); // Debug log
+    console.log('FormData entries for create:', [...formData.entries()]); // Debug log
 
     // Create new meeting with files
     const response = await services.createMeetingMinute(userStore.getToken, formData);
     meetingForm.value._id = response._id;
     meetingForm.value.createdAt = response.createdAt;
+    meetingForm.value.filename = response.filename || "";
 
     
     const newMeeting = {
@@ -193,51 +196,6 @@ async function saveDraft() {
     clearDraft();
   } catch (error) {
     console.error('Failed to save draft:', error);
-  }
-}
-
-
-
-async function publish() {
-  try {
-    // Create FormData for file upload
-    const formData = new FormData();
-    formData.append('title', meetingForm.value.title);
-    formData.append('note', meetingForm.value.note);
-    formData.append('status', 'published'); // Set status to published
-    
-    // Append PDF file if selected
-    if (meetingForm.value.file) {
-      formData.append('file', meetingForm.value.file); // Use 'file' as the field name (matches backend)
-      console.log('File appended to FormData:', meetingForm.value.file.name); // Debug log
-    } else {
-      console.log('No file selected for publish'); // Debug log
-    }
-
-    console.log('FormData entries for publish:', [...formData.entries()]); // Debug log
-
-    // Create new meeting with files
-    const response = await services.createMeetingMinute(userStore.getToken, formData);
-    meetingForm.value._id = response._id;
-    meetingForm.value.createdAt = response.createdAt;
-    
-    const newMeeting = {
-      ...meetingForm.value,
-      status: 'published',
-      _id: response._id,
-      createdAt: response.createdAt,
-      fileUrl: response.fileUrl || null,
-      fileType: response.fileType || null
-    };
-    
-    meetingList.value.push(newMeeting);
-  
-    console.log('Created new meeting:', response);
-    emits('meetingsUpdated', meetingList.value);
-    
-    clearDraft();
-  } catch (error) {
-    console.error('Failed to publish:', error);
   }
 }
 

@@ -3,7 +3,7 @@ const path = require('path');
 
 class FileService {
   constructor() {
-    this.uploadsDir = path.join(__dirname, '../uploads');
+    this.uploadsDir = path.join(__dirname, '../../uploads');
   }
 
   /**

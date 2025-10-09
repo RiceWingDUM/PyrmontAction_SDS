@@ -3,13 +3,13 @@ const path = require('path');
 
 // Create feature-specific upload directories
 const uploadDirs = [
-  'apps/uploads',
-  'apps/uploads/gallery',
-  'apps/uploads/projects',
-  'apps/uploads/meeting-minutes',
-  'apps/uploads/events',
-  'apps/uploads/blogs',
-  'apps/uploads/temp'
+  'uploads',
+  'uploads/gallery',
+  'uploads/projects',
+  'uploads/meeting-minutes',
+  'uploads/events',
+  'uploads/blogs',
+  'uploads/temp'
 ];
 
 console.log('Setting up upload directories...');

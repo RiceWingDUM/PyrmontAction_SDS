@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'apps/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB (Mongoose)
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/pyrmont_sds';

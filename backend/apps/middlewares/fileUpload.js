@@ -4,11 +4,11 @@ const fs = require('fs');
 
 // Create feature-specific upload directories
 const uploadDirs = {
-  meetingMinutes: path.join(__dirname, '../uploads/meeting-minutes'),
-  gallery: path.join(__dirname, '../uploads/gallery'),
-  projects: path.join(__dirname, '../uploads/projects'),
-  events: path.join(__dirname, '../uploads/events'),
-  blogs: path.join(__dirname, '../uploads/blogs'),
+  meetingMinutes: path.join(__dirname, '../../uploads/meeting-minutes'),
+  gallery: path.join(__dirname, '../../uploads/gallery'),
+  projects: path.join(__dirname, '../../uploads/projects'),
+  events: path.join(__dirname, '../../uploads/events'),
+  blogs: path.join(__dirname, '../../uploads/blogs'),
 };
 
 // Ensure directories exist
