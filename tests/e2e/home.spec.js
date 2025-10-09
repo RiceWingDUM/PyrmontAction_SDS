@@ -24,4 +24,20 @@ test.describe("Carousel UI Behavior", () => {
         // Assert that the second dot is now active
         await expect(secondActive).toBeVisible();
     });
+
+    // Test to check if clicking left arrow moves to previous slide
+    test("should move to previous slide when clicking left arrow", async ({ page }) => {
+        const rightArrow = page.locator(".toggle-page.right i");
+        const leftArrow = page.locator(".toggle-page.left i");
+
+        // Move to slide 2 first
+        await rightArrow.click();
+
+        // Then go back to slide 1
+        await leftArrow.click();
+        const firstActive = page.locator(".pagination span.active:nth-child(1)");
+
+        // Assert that the first dot is active again
+        await expect(firstActive).toBeVisible();
+    });
 });
