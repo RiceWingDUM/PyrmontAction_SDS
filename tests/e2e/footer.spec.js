@@ -24,4 +24,11 @@ test.describe("Footer Component", () => {
     const landcareLink = footer.locator("a[href*='pyrmontultimolandcare']");
     await expect(landcareLink).toHaveAttribute("target", "_blank");
   });
+
+  // Check if contact info is correct in footer section
+  test("contains correct contact email and phone", async ({ page }) => {
+    await page.goto("http://localhost:5173/");
+    await expect(page.locator("text=convenor@pyrmontaction.org.au")).toBeVisible();
+    await expect(page.locator("text=(+61) 414 997 089")).toBeVisible();
+  });
 });
