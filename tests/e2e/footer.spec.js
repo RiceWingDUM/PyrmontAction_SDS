@@ -3,6 +3,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Footer Component", () => {
+
     // Check if footer content is displayed on homepage
     test("renders footer sections on homepage", async ({ page }) => {
     await page.goto("http://localhost:5173/"); // replace with your dev server port
@@ -13,5 +14,14 @@ test.describe("Footer Component", () => {
     await expect(footer.locator("text=Our Partners")).toBeVisible();
     await expect(footer.locator("text=Gallery")).toBeVisible();
     await expect(footer.locator("text=Contact Us")).toBeVisible();
+  });
+
+  // Check if partner links open in new tabs
+  test("displays partner links that open in new tabs", async ({ page }) => {
+    await page.goto("http://localhost:5173/");
+
+    const footer = page.locator(".footer");
+    const landcareLink = footer.locator("a[href*='pyrmontultimolandcare']");
+    await expect(landcareLink).toHaveAttribute("target", "_blank");
   });
 });
