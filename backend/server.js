@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 const Role = require('./apps/models/roleModel'); 
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'apps/uploads')));
 
 // Connect to MongoDB (Mongoose)
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/pyrmont_sds';
@@ -27,7 +31,8 @@ app.use('/api/gallery', require('./apps/routes/galleryRoutes'));
 app.use('/api/contact', require('./apps/routes/contactRoutes')); 
 app.use('/api/auth', require('./apps/routes/authRoutes')); 
 app.use('/api/events', require('./apps/routes/eventRoutes')); 
-app.use('/api/minutes', require('./apps/routes/meetingMinuteRoutes')); 
+app.use('/api/minutes', require('./apps/routes/meetingMinuteRoutes'));
+app.use('/api/files', require('./apps/routes/fileUploadRoutes')); 
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
