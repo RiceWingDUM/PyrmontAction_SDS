@@ -21,4 +21,14 @@ test.describe("Gallery Feature E2E", () => {
         // Assert that lightbox overlay is visible
         await expect(page.locator(".lightbox-overlay")).toBeVisible();
     });
+
+    // Verify if lightbox closes when close button clicked
+    test("should close lightbox when clicking close button", async ({ page }) => {
+        await page.goto("http://localhost:5173/gallery");
+        await page.locator(".collage-item").first().click();
+        await page.locator(".lightbox-close").click();
+
+        // Assert that lightbox overlay is hidden
+        await expect(page.locator(".lightbox-overlay")).toBeHidden();
+    });
 });
