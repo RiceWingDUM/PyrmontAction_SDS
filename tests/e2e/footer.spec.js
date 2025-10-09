@@ -31,4 +31,23 @@ test.describe("Footer Component", () => {
     await expect(page.locator("text=convenor@pyrmontaction.org.au")).toBeVisible();
     await expect(page.locator("text=(+61) 414 997 089")).toBeVisible();
   });
+
+  // Check if social media links in footer navigate correctly
+  test("social media links navigate externally", async ({ page, context }) => {
+    await page.goto("http://localhost:5173/");
+    const facebook = page.locator("a.facebook");
+    const instagram = page.locator("a.instagram");
+
+    const [fbPage] = await Promise.all([
+      context.waitForEvent("page"), // wait for new tab
+      facebook.click(),
+    ]);
+    expect(fbPage.url()).toContain("facebook.com");
+
+    const [igPage] = await Promise.all([
+      context.waitForEvent("page"),
+      instagram.click(),
+    ]);
+    expect(igPage.url()).toContain("instagram.com");
+  });
 });
