@@ -1,68 +1,52 @@
 const Project = require('../models/projectModel');
 
 module.exports = {
-    // Create project with optional image upload
-    async createProject(req, res) {
+    // Create project with image upload (following meeting minutes pattern)
+    async createProject(req, res) {   
+        console.log('Request body:', req.body);
+        console.log('Uploaded file:', req.file);
         try {
-            const { project_name, project_description, project_date } = req.body;
+            const { project_name, project_description, project_type } = req.body;
             
-            // Create project data
-            const projectData = {
-                project_name,
-                project_description,
-                project_date: project_date || new Date()
+            const projectData = { 
+                project_name, 
+                project_description, 
+                project_type: project_type || 'open'
             };
 
-            // If image was uploaded, process it
-            if (req.file) {
-                // Add image info to project
-                projectData.project_image = req.file.filename;
-                projectData.project_image_type = 'uploaded';
-            }
-            
-            const newProject = new Project(projectData);
-            await newProject.save();
-
-            return res.status(201).json({
-                message: 'Project created successfully',
-                project: newProject
-            });
-        } catch (error) {
-            console.error('Error creating project:', error);
-            return res.status(500).json({ error: 'Error creating project' });
-        }
-    },
-
-    // Upload image to existing project
-    async uploadProjectImage(req, res) {
-        try {
-            if (!req.file) {
-                return res.status(400).json({ message: 'No image uploaded' });
+            // If file was uploaded, process it (similar to meeting minutes)
+            if (req.file && req.body.isUploaded !== "false") {
+                // Add file info to project (mapping to project model fields)
+                projectData.project_imageUrl = `/uploads/projects/${req.file.filename}`;
+                projectData.project_image = req.file.originalname;
+                projectData.isUploaded = "true";
             }
 
-            const projectId = req.params.id;
-            const project = await Project.findById(projectId);
-            
-            if (!project) {
-                return res.status(404).json({ message: 'Project not found' });
-            }
+            const project_date = req.body.project_date ? new Date(req.body.project_date) : undefined;
+            if (project_date) projectData.project_date = project_date;
 
-            // Update project with image info
-            project.project_image = req.file.filename;
-            project.project_image_type = 'uploaded';
-
+            const project = new Project(projectData);
             await project.save();
 
-            res.status(200).json({
-                message: 'Image uploaded successfully',
-                project: project
-            });
+            res.status(201).json(project);
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
-    }, 
+    },
 
-    // Read
+ 
+
+    // Read - List all projects (following meeting minutes pattern)
+    async getAllProjects(_req, res) {
+        try {
+            const allProjects = await Project.find().sort({ project_date: -1 });
+            res.json(allProjects);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    },
+
+    // Read - List open projects
     async openProjects(req, res){
         try{
             const openProjects = await Project.find({ project_type: 'open' });
@@ -94,41 +78,59 @@ module.exports = {
         }
     },
 
-    // Update
+    // Update project (following meeting minutes pattern)
     async updateProject(req, res) {
         try {
+            console.log('Update request body:', req.body);
             const { id } = req.params;
-            const { project_name, project_description, project_type, project_image, project_date } = req.body;
+            const { project_name, project_description, project_type, project_image } = req.body;
+            const project_date = req.body.project_date ? new Date(req.body.project_date) : undefined;
+            
             const updatedProject = await Project.findByIdAndUpdate(
                 id,
                 { project_name, project_description, project_type, project_image, project_date },
                 { new: true }
             );
-            if (!updatedProject) {
-                return res.status(404).json({ error: 'Project not found' });
-            }
-            return res.status(200).json({
-                message: 'Project updated successfully',
-                project: updatedProject
-            });
-        } catch (error) {
-            console.error('Error updating project:', error);
-            return res.status(500).json({ error: 'Error updating project' });
+            
+            console.log('Updated project:', updatedProject);
+            if (!updatedProject) return res.status(404).json({ message: 'Not found' });
+            res.json(updatedProject);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
         }
     },
 
-    //Delete
+    // Update project with file upload (following meeting minutes pattern)
+    async updateProjectWithFile(req, res) {   
+        console.log('Request body:', req.body);
+        console.log('Uploaded file:', req.file);
+        try {
+            const { project_name, project_description, project_type } = req.body;
+            const projectData = { project_name, project_description, project_type };
+
+            // If file was uploaded, process it
+            if (req.file && req.body.isUploaded !== "false") {
+                // Add file info to project (mapping to project model fields)
+                projectData.project_imageUrl = `/uploads/projects/${req.file.filename}`;
+                projectData.project_image = req.file.originalname;
+                projectData.isUploaded = "true";
+            }
+
+            const updatedProject = await Project.findByIdAndUpdate(req.params.id, projectData, { new: true });
+            res.status(200).json(updatedProject);
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    },
+
+    // Delete project (following meeting minutes pattern)
     async deleteProject(req, res) {
         try {
-            const { id } = req.params;
-            const deletedProject = await Project.findByIdAndDelete(id);
-            if (!deletedProject) {
-                return res.status(404).json({ error: 'Project not found' });
-            }
-            return res.status(200).json({ message: 'Project deleted successfully' });
-        } catch (error) {
-            console.error('Error deleting project:', error);
-            return res.status(500).json({ error: 'Error deleting project' });
+            const deletedProject = await Project.findByIdAndDelete(req.params.id);
+            if (!deletedProject) return res.status(404).json({ message: 'Project not found' });
+            res.status(200).json({ message: 'Project deleted successfully' });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
         }
     },
 

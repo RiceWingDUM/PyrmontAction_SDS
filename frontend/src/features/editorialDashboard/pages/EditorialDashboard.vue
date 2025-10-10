@@ -18,52 +18,11 @@
         <h2 class="page-title">Edit {{ currentTab }}</h2>
         <div class="card">
           <!-- Projects Tab -->
-          <div v-if="currentTab === 'Projects'" class="projects-tab-layout">
-            <!-- Project List View -->
-            <div v-if="!showForm" class="projects-list-nav">
-              <button class="add-btn" @click="addProject">+ New Project</button>
-              <ul>
-                <li v-for="proj in projects" :key="proj._id">
-                  <div>
-                    <strong>{{ proj.project_name }}</strong>
-                    <div class="mini-date">{{ proj.project_date }}</div>
-                  </div>
-                  <div class="project-actions">
-                    <button @click.stop="editProject(proj)">Edit</button>
-                    <button @click.stop="deleteProject(proj._id)">Delete</button>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <!-- Editorial Dashboard Form View -->
-            <div v-else class="editor-projects-editor">
-              <form class="editor-form" @submit.prevent="saveProject">
-                <input
-                  v-model="editingProject.project_name"
-                  class="editor-title"
-                  placeholder="Enter project title..."
-                  required
-                />
-                <textarea
-                  v-model="editingProject.project_description"
-                  class="editor-description"
-                  placeholder="Write your project description here..."
-                  rows="8"
-                  required
-                ></textarea>
-                <label class="editor-image-label">
-                  <span>Upload Image</span>
-                  <input type="file" @change="onImageChange" />
-                </label>
-                <div v-if="editingProject.project_image" class="editor-image-preview">
-                  <img :src="editingProject.project_image" alt="Preview" />
-                </div>
-                <div class="editor-actions">
-                  <button type="submit" class="save-btn">Save</button>
-                  <button type="button" class="cancel-btn" @click="cancelEdit">Cancel</button>
-                </div>
-              </form>
-            </div>
+          <div v-if="currentTab === 'Projects'">
+            <ProjectsAdmin 
+              :projectsData="projects" 
+              @projectsUpdated="handleProjectsUpdated" 
+            />
           </div>
           <div v-else class="placeholder">
             <p>Edit {{ currentTab }} content here.</p>
@@ -75,7 +34,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '../../../stores/authStore'
+import dashboardServices from '../../accountDashboard/dashboardServices'
+import ProjectsAdmin from '../components/ProjectsAdmin.vue'
+
+const userStore = useUserStore()
 
 const tabs = [
   { name: 'Projects', label: 'Projects', icon: '📁', color: '#fbbf24' },
@@ -85,84 +49,27 @@ const tabs = [
 ]
 const currentTab = ref('Projects')
 
-// Mock projects data
-const projects = ref([
-  {
-    _id: '1',
-    project_name: 'Metro West Station & 31 storey tower development',
-    project_description: 'Ensuring Public built environment outcomes',
-    project_type: 'open',
-    project_image: 'metro_west_station.jpg',
-    project_date: '2025-05-27'
-  },
-  {
-    _id: '2',
-    project_name: 'Schools and Education',
-    project_description: 'New and better schools needed for Pyrmont',
-    project_type: 'open',
-    project_image: 'schools_and_education.jpg',
-    project_date: '2025-05-27'
-  }
-])
+// Dynamic projects data from database
+const projects = ref([])
 
-const showForm = ref(false)
-const editingProject = ref({
-  _id: null,
-  project_name: '',
-  project_description: '',
-  project_type: '',
-  project_image: '',
-  project_date: ''
+// Load projects data
+async function loadProjects() {
+  try {
+    const response = await dashboardServices.getAllProjects(userStore.getToken)
+    projects.value = response
+    console.log('Loaded projects:', response)
+  } catch (error) {
+    console.error('Failed to load projects:', error)
+  }
+}
+
+function handleProjectsUpdated(updatedProjects) {
+  projects.value = updatedProjects
+}
+
+onMounted(() => {
+  loadProjects()
 })
-
-function addProject() {
-  editingProject.value = {
-    _id: null,
-    project_name: '',
-    project_description: '',
-    project_type: '',
-    project_image: '',
-    project_date: ''
-  }
-  showForm.value = true
-}
-
-function editProject(project) {
-  editingProject.value = { ...project }
-  showForm.value = true
-}
-
-function saveProject() {
-  if (editingProject.value._id) {
-    // Edit existing
-    const idx = projects.value.findIndex(p => p._id === editingProject.value._id)
-    if (idx !== -1) projects.value[idx] = { ...editingProject.value }
-  } else {
-    // Add new
-    editingProject.value._id = Date.now().toString()
-    projects.value.push({ ...editingProject.value })
-  }
-  showForm.value = false
-}
-
-function cancelEdit() {
-  showForm.value = false
-}
-
-function deleteProject(id) {
-  projects.value = projects.value.filter(p => p._id !== id)
-}
-
-function onImageChange(e) {
-  const file = e.target.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      editingProject.value.project_image = ev.target.result
-    }
-    reader.readAsDataURL(file)
-  }
-}
 </script>
 
 <style scoped>

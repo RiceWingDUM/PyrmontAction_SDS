@@ -11,9 +11,14 @@ const dashboardServices = {
     updateMeetingMinute(token, id, data){ return api.put(`api/minutes/${id}`, data, token);},
     updateMeetingWithFile(token, id, formData){ return api.putFormData(`api/minutes/${id}/upload`, formData, token);},
     publishMeetingMinute(token, id, data){ return api.patch(`api/minutes/${id}/publish`, data, token);},
-    deleteMeetingMinute(token, id){ return api.delete(`api/minutes/${id}`, token);}
+    deleteMeetingMinute(token, id){ return api.delete(`api/minutes/${id}`, token);},
 
-    // Project Management
+    // Project Management (following meeting minutes pattern)
+    getAllProjects(token){ return api.get("api/projects/", token);},
+    createProject(token, formData){ return api.postFormData("api/projects/", formData, token);},
+    updateProject(token, id, data){ return api.put(`api/projects/${id}`, data, token);},
+    updateProjectWithFile(token, id, formData){ return api.putFormData(`api/projects/${id}/upload`, formData, token);},
+    deleteProject(token, id){ return api.delete(`api/projects/${id}`, token);}
 }
 
 export default dashboardServices;

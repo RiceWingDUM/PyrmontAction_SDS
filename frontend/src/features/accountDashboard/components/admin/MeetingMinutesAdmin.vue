@@ -163,6 +163,7 @@ async function create(status) {
     formData.append('title', meetingForm.value.title);
     formData.append('note', meetingForm.value.note);
     formData.append('status', meetingForm.value.status);
+    formData.append('isUploaded', "true");
     
     // Append PDF file if selected
     if (meetingForm.value.file) {

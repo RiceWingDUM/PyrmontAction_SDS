@@ -1,44 +1,52 @@
-const controller = require('../controllers/projectController');
 const router = require('express').Router();
-const jwtAuth = require('../middlewares/jwtMiddleware');
-const validator = require('../validations/projectValidaiton');
+const ctrl = require('../controllers/projectController');
 const { upload } = require('../middlewares/fileUpload');
+const jwtAuth = require('../middlewares/jwtMiddleware');
 
-//Create project (with optional image upload)
+// Create
+// Create project with image upload (following meeting minutes pattern)
 router.post('/', 
     jwtAuth.verifyToken, 
-    jwtAuth.verifyRole(['admin', 'editor']),
-    upload.projectImage,
-    validator.validateProjectInput,
-    controller.createProject
+    jwtAuth.verifyRole(['admin', 'editor']), 
+    upload.projectImage, 
+    ctrl.createProject
 );
 
-// Upload image to existing project
-router.post('/:id/upload-image', 
-    jwtAuth.verifyToken, 
+// Read
+// List all projects
+router.get('/', 
+    jwtAuth.verifyToken,
     jwtAuth.verifyRole(['admin', 'editor']),
-    upload.projectImage,
-    controller.uploadProjectImage
+    ctrl.getAllProjects
 );
 
-//Read
-router.get('/open', controller.openProjects);
-router.get('/closed', controller.closedProjects);
-router.get('/:id', controller.getProject);
+// List open projects (existing functionality)
+router.get('/open', ctrl.openProjects);
+router.get('/closed', ctrl.closedProjects);
+router.get('/:id', ctrl.getProject);
 
-//Update
+// Update
+// Route to update an existing project
 router.put('/:id', 
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin', 'editor']),
-    validator.validateProjectInput,
-    controller.updateProject
+    ctrl.updateProject
 );
 
-//Delete
-router.delete('/:id', 
-    jwtAuth.verifyToken,
+// Route to update project with file upload
+router.put('/:id/upload', 
+    jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin', 'editor']),
-    controller.deleteProject
+    upload.projectImage,
+    ctrl.updateProjectWithFile
+);
+
+// Delete
+// Route to delete an existing project
+router.delete('/:id', 
+    jwtAuth.verifyToken, 
+    jwtAuth.verifyRole(['admin', 'editor']), 
+    ctrl.deleteProject
 );
 
 module.exports = router;
