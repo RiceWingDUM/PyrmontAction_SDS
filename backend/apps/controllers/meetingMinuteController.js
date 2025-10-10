@@ -8,12 +8,8 @@ module.exports = {
     try {
       const { title, note, status } = req.body;
       
-      // Create meeting minute data
-      const meetingData = {
-        title,
-        note,
-        status
-      };
+
+      const meetingData = { title, note, status };
 
       // If file was uploaded, process it
       if (req.file) {
@@ -87,11 +83,14 @@ module.exports = {
   // Update an existing meeting minute
   async updateMeeting(req, res) {
     try {
+      console.log('Update request body:', req.body);
       const updatedMeeting = await MeetingMinute.findByIdAndUpdate(
         req.params.id,
         req.body,
         { new: true }
       );
+      
+      console.log('Updated meeting:', updatedMeeting);
       if (!updatedMeeting) return res.status(404).json({ message: 'Not found' });
       res.json(updatedMeeting);
     } catch (err) {

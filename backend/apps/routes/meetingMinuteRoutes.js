@@ -28,13 +28,13 @@ router.post('/',
 router.post('/:id/upload', 
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin']), 
-    upload.meetingMinuteFile, 
+    upload.meetingMinuteFile,
     ctrl.uploadFile
 );
 
 router.patch('/:id/publish', 
     jwtAuth.verifyToken, 
-    jwtAuth.verifyRole(['admin']), 
+    jwtAuth.verifyRole(['admin']),
     ctrl.publishMeeting
 );
 
@@ -42,7 +42,8 @@ router.patch('/:id/publish',
 // Route to update an existing meeting minute
 router.put('/:id', 
     jwtAuth.verifyToken, 
-    jwtAuth.verifyRole(['admin']), 
+    jwtAuth.verifyRole(['admin']),
+    upload.meetingMinuteFile,
     ctrl.updateMeeting
 );
 

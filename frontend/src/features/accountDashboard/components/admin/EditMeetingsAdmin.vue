@@ -31,16 +31,18 @@ const userStore = useUserStore();
 const props = defineProps({
   meeting: {
     type: Object,
-    default: null
+    required: true,
   }
 });
+
+const fileEl = ref(null);
 
 const emits = defineEmits(['meetingUpdated', 'closeModal']);
 
 const editForm = ref({
   _id: null,
   title: '',
-  note: '',
+  note: ''
 });
 
 const showEditModal = computed(() => !!props.meeting);
