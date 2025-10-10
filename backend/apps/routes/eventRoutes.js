@@ -10,7 +10,7 @@ router.get('/', ctrl.getPublishedEvents);
 router.post('/', 
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin']), 
-    upload.eventFile,
+    upload.eventImage,
     ctrl.createEvent
 );
 
@@ -18,7 +18,7 @@ router.post('/',
 router.post('/:id/upload', 
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin']), 
-    upload.eventFile,
+    upload.eventImage,
     ctrl.uploadEventFile
 );
 router.put('/:id', jwtAuth.verifyToken, jwtAuth.verifyRole(['admin']), ctrl.updateEvent);

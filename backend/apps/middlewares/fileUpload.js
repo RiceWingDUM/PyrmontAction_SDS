@@ -82,21 +82,21 @@ const uploadConfigs = {
     storage: createStorage('projects'),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     fileFilter: imageFilter,
-  }).single('projectImage'),
+  }).single('image'),
 
   // Gallery uploads (multiple images)
   galleryImages: multer({
     storage: createStorage('gallery'),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB per file
     fileFilter: imageFilter,
-  }).array('galleryImages', 10), // Max 10 images
+  }).array('images', 10), // Max 10 images
 
   // Single gallery image
   galleryImage: multer({
     storage: createStorage('gallery'),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     fileFilter: imageFilter,
-  }).single('galleryImage'),
+  }).single('image'),
 
   // Meeting minutes uploads (PDFs)
   meetingMinuteFile: multer({
@@ -106,25 +106,25 @@ const uploadConfigs = {
   }).single('file'),
 
   // Event uploads (images and documents)
-  eventFile: multer({
+  eventImage: multer({
     storage: createStorage('events'),
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
     fileFilter: mixedContentFilter,
-  }).single('eventFile'),
+  }).single('image'),
 
   // Blog uploads (images primarily)
   blogImage: multer({
     storage: createStorage('blogs'),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     fileFilter: imageFilter,
-  }).single('blogImage'),
+  }).single('image'),
 
   // Multiple blog images
   blogImages: multer({
     storage: createStorage('blogs'),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB per file
     fileFilter: imageFilter,
-  }).array('blogImages', 5), // Max 5 images
+  }).array('images', 5), // Max 5 images
 };
 
 module.exports = {

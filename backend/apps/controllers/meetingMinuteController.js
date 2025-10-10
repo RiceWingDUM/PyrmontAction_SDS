@@ -1,8 +1,9 @@
 const MeetingMinute = require('../models/meetingMinuteModel');
 
 module.exports = {
-  // Create meeting minute with optional file upload
-  async createMeeting(req, res) {
+  // *** Create ***
+  // Handle file upload and create meeting minute
+  async createMeeting(req, res) {   
     console.log('Request body:', req.body);
     console.log('Uploaded file:', req.file);
     try {
@@ -18,45 +19,16 @@ module.exports = {
         meetingData.filename = req.file.originalname;
       }
 
-      const minutes = new MeetingMinute(meetingData);
-      await minutes.save();
-
-      res.status(201).json(minutes);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  },
-
-  // Upload file to existing meeting minute
-  async uploadFile(req, res) {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
-      }
-
-      const meetingId = req.params.id;
-      const meeting = await MeetingMinute.findById(meetingId);
-      
-      if (!meeting) {
-        return res.status(404).json({ message: 'Meeting minute not found' });
-      }
-
-      // Update meeting minute with file info
-      meeting.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
-      meeting.originalFileName = req.file.originalname;
-      meeting.fileType = 'uploaded';
-
+      const meeting = new MeetingMinute(meetingData);
       await meeting.save();
 
-      res.status(200).json({
-        message: 'File uploaded successfully',
-        meeting: meeting
-      });
+      res.status(201).json(meeting);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
   },
 
+  // *** Read ***
   // List published
   async getPublishedMeeting(_req, res) {
     const publishedMinutes = await MeetingMinute.find({ status: 'published' }).sort({ meetingDate: -1 });
@@ -69,6 +41,7 @@ module.exports = {
     res.json(allMinutes);
   },
 
+  // Update
   // Publish
   async publishMeeting(req, res) {
     const meeting = await MeetingMinute.findByIdAndUpdate(
@@ -97,7 +70,33 @@ module.exports = {
       res.status(400).json({ message: err.message });
     }
   },
-  
+
+  // Upload file to existing meeting minute
+  async uploadFile(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      const meeting = await MeetingMinute.findById(req.params.id);
+      
+      if (!meeting) {
+        return res.status(404).json({ message: 'Meeting minute not found' });
+      }
+
+      meeting.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
+      meeting.filename = req.file.originalname;
+
+      await meeting.save();
+
+      res.status(200).json({
+        meeting, message: 'File uploaded successfully'
+      });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
+
+  // Delete
   async deleteMeeting(req, res) {
     try {
       const deletedMeeting = await MeetingMinute.findByIdAndDelete(req.params.id);

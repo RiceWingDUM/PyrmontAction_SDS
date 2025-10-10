@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Create feature-specific upload directories
+// node setup-uploads.js to run
 const uploadDirs = [
   'uploads',
   'uploads/gallery',
@@ -20,7 +21,7 @@ uploadDirs.forEach(dir => {
     fs.mkdirSync(fullPath, { recursive: true });
     console.log(`✓ Created: ${dir}`);
   } catch (error) {
-    if (error.code !== 'EEXIST') {
+    if (error.code !== 'EXIST') {
       console.error(`✗ Failed to create: ${dir}`, error.message);
     } else {
       console.log(`✓ Already exists: ${dir}`);
