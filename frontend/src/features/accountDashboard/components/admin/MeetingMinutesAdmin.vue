@@ -111,12 +111,14 @@ const meetingForm = ref({
   _id: null,
   title: '',
   note: '',
-  file: null,
   status: 'draft',
+  file: null,
   filename: "",
+  isUploaded: "false",
   createdAt: null,
 })
 
+const fileEl = ref(null)
 
 watch(() => props.meetingsData, (newData) => {
   meetingList.value = newData;
@@ -125,11 +127,6 @@ watch(() => props.meetingsData, (newData) => {
 onUnmounted(() => {
   meetingList.value = [];
 });
-
-
-
-const draft = reactive({ id: null, title: '', body: '', files: [], status: null })
-const fileEl = ref(null)
 
 const canSave = computed(() => meetingForm.value.title.trim().length > 0)
 const canPublish = computed(() => meetingForm.value.title.trim().length > 0)
@@ -150,8 +147,10 @@ function clearDraft() {
   meetingForm.value._id = null;
   meetingForm.value.title = '';
   meetingForm.value.note = '';
-  meetingForm.value.file = null;
   meetingForm.value.status = 'draft';
+  meetingForm.value.file = null;
+  meetingForm.value.filename = "";
+  meetingForm.value.isUploaded = "false";
   meetingForm.value.createdAt = null;
   if (fileEl.value) fileEl.value.value = '';
 }
@@ -180,8 +179,8 @@ async function create(status) {
     meetingForm.value._id = response._id;
     meetingForm.value.createdAt = response.createdAt;
     meetingForm.value.filename = response.filename || "";
+    meetingForm.value.isUploaded = response.isUploaded || "false";
 
-    
     const newMeeting = {
       ...meetingForm.value,
       _id: response._id,

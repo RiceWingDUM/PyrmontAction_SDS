@@ -47,8 +47,14 @@ router.patch('/:id/publish',
 router.put('/:id', 
     jwtAuth.verifyToken, 
     jwtAuth.verifyRole(['admin']),
-    upload.meetingMinuteFile,
     ctrl.updateMeeting
+);
+
+router.put('/:id/upload', 
+    jwtAuth.verifyToken, 
+    jwtAuth.verifyRole(['admin']),
+    upload.meetingMinuteFile,
+    ctrl.updateMeetingWithFile
 );
 
 

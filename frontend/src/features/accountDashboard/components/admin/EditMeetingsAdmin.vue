@@ -13,6 +13,22 @@
         <textarea v-model="editForm.note" class="input" rows="6" placeholder="Type the meeting notes…"></textarea>
       </div>
 
+      <div class="row">
+        <label class="lbl">Attach File</label>
+        <div class="fileZone">
+          <input ref="fileEl" type="file" accept="application/pdf" @change="chooseFile" />
+          <div v-if="editForm.file" class="fileList">
+            <span class="chip-name">📄 {{ editForm.file.name }}</span>
+            <button class="chip-x" title="Remove" @click="removeFile">×</button>
+          </div>
+          <div v-else-if="editForm.filename" class="fileList">
+            <span class="chip-name">📄 {{ editForm.filename }}</span>
+            <button class="chip-x" title="Remove" @click="removeUploadedFile">×</button>
+          </div>
+          <div v-else class="hint">No file chosen</div>
+        </div>
+      </div>
+
       <div class="actions">
         <button class="btn primary" @click="saveEdit">Save</button>
         <button class="btn" @click="closeEditModal">Cancel</button>
@@ -42,7 +58,9 @@ const emits = defineEmits(['meetingUpdated', 'closeModal']);
 const editForm = ref({
   _id: null,
   title: '',
-  note: ''
+  note: '',
+  filename: "",
+  isUploaded: false,
 });
 
 const showEditModal = computed(() => !!props.meeting);
@@ -53,17 +71,48 @@ watch(() => props.meeting, (newMeeting) => {
     editForm.value._id = newMeeting._id;
     editForm.value.title = newMeeting.title;
     editForm.value.note = newMeeting.note;
+    editForm.value.filename = newMeeting.filename;
+    editForm.value.isUploaded = newMeeting.isUploaded;
   }
 }, { immediate: true });
 
 function closeEditModal() {
-  editForm.value = { _id: null, title: '', note: '' };
+  editForm.value = { _id: null, title: '', note: '', filename: "", isUploaded: false };
+  fileEl.value.value = ''; // Reset the file input element
   emits('closeModal');
+}
+
+function chooseFile(e) {
+  const file = e.target.files[0]; // Access the first file directly
+  editForm.value.file = file; // Assign the single file to the form
+  editForm.value.isUploaded = "false";
+  console.log('File selected:', file); // Debug log
+}
+
+function removeFile() {
+  if (fileEl.value) {
+    fileEl.value.value = ''; // Reset the file input element
+  }
+  editForm.value.file = null;
+}
+
+function removeUploadedFile() {
+  editForm.value.filename = "";
 }
 
 async function saveEdit() {
   try {
-    const response = await services.updateMeetingMinute(userStore.getToken, editForm.value._id, editForm.value);
+    const formData = new FormData();
+    formData.append('title', editForm.value.title);
+    formData.append('note', editForm.value.note);
+
+    if (editForm.value.file && editForm.value.isUploaded === "false") {
+      formData.append('file', editForm.value.file);
+    }
+
+    const response = await services.updateMeetingWithFile(userStore.getToken, editForm.value._id, formData);
+    editForm.value.filename = response.filename || "";
+    editForm.value.isUploaded = response.isUploaded || "false";
     emits('meetingUpdated', { ...editForm.value, ...response });
     closeEditModal();
   } catch (error) {
@@ -95,5 +144,39 @@ async function saveEdit() {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+}
+.hidden-input {
+  display: none;
+}
+.fileZone {
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+.fileList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.chip-name {
+  display: inline-block;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-right: 6px;
+  font-size: 12px;
+}
+.chip-x {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+.hint {
+  color: #6b7280;
 }
 </style>

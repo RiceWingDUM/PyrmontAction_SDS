@@ -13,10 +13,11 @@ module.exports = {
       const meetingData = { title, note, status };
 
       // If file was uploaded, process it
-      if (req.file) {
+      if (req.file && req.body.isUploaded !== "false") {
         // Add file info to meeting minute
         meetingData.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
         meetingData.filename = req.file.originalname;
+        meetingData.isUploaded = "true"; // Auto-publish on file upload
       }
 
       const meeting = new MeetingMinute(meetingData);
@@ -68,6 +69,28 @@ module.exports = {
       res.json(updatedMeeting);
     } catch (err) {
       res.status(400).json({ message: err.message });
+    }
+  },
+
+  async updateMeetingWithFile(req, res) {   
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file);
+    try {
+      const { title, note, status } = req.body;
+      const meetingData = { title, note, status };
+
+      // If file was uploaded, process it
+      if (req.file && req.body.isUploaded !== "false") {
+        // Add file info to meeting minute
+        meetingData.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
+        meetingData.filename = req.file.originalname;
+        meetingData.isUploaded = "true"; // Auto-publish on file upload
+      }
+
+      const updatedMeeting = await MeetingMinute.findByIdAndUpdate(req.params.id, meetingData, { new: true });
+      res.status(200).json(updatedMeeting);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
   },
 
