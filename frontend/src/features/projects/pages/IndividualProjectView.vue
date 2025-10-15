@@ -8,7 +8,9 @@
                 <h2 class="project-individual-header"> {{ individualProject.project_name }}</h2>
                 <p class="project-individual-date"> <i class="fa-solid fa-calendar-days"></i>  {{ individualProject.project_date }}</p>
             </div>
-            <img :src="`/src/assets/Projects/${individualProject.project_image}`" alt="project Image" />
+            <!-- <img :src="`/src/assets/Projects/${individualProject.project_image}`" alt="project Image" /> -->
+            <!-- <img :src="imageSrc" alt="project Image" /> -->
+            <img :src="`${SERVER_URL}${individualProject.project_imageUrl}`" alt="project Image" />
         </div>
         <div class="project-individual-body">
             <div class="project-individual-details"><ProjectIndividualDetails :individualProject="individualProject"/></div>
@@ -19,7 +21,8 @@
 
 
 <script setup>
-    import { ref, watch } from 'vue';
+    import SERVER_URL from '@/config';
+    import { ref, watch, computed } from 'vue';
     import { useRoute } from 'vue-router'
     import ProjectIndividualDetails from '@/features/projects/components/ProjectIndividualDetails.vue';
     import ProjectList from '@/features/projects/components/ProjectList.vue';
@@ -29,6 +32,12 @@
     const relatedProjects = ref([]);
     const route = useRoute();
     watch(() => route.params.projectId, fetchData, {immediate: true})
+
+    const imageSrc = computed(() => {
+        return individualProject.value.project_image 
+        ? `${SERVER_URL}${individualProject.value.project_imageUrl}` 
+        : '/src/assets/Projects/future_projects.jpg';
+    });
 
     async function fetchData(id){
 

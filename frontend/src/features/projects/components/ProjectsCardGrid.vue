@@ -15,7 +15,7 @@
         <div class="project-card__image-container">
           <img
               class="project-card__image"
-              :src="`/src/assets/Projects/${project.project_image}`"
+              :src="`${SERVER_URL}${project.project_imageUrl}`"
               :alt="project.title"
           />
           <!-- Optional overlay that appears on hover
@@ -46,6 +46,7 @@
 </template>
 
 <script setup>
+import SERVER_URL from '@/config';
 import { ref } from 'vue'
 
 const props = defineProps({
