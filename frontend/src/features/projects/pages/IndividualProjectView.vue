@@ -9,7 +9,6 @@
                 <p class="project-individual-date"> <i class="fa-solid fa-calendar-days"></i>  {{ individualProject.project_date }}</p>
             </div>
             <!-- <img :src="`/src/assets/Projects/${individualProject.project_image}`" alt="project Image" /> -->
-            <!-- <img :src="imageSrc" alt="project Image" /> -->
             <img :src="`${SERVER_URL}${individualProject.project_imageUrl}`" alt="project Image" />
         </div>
         <div class="project-individual-body">
@@ -32,12 +31,6 @@
     const relatedProjects = ref([]);
     const route = useRoute();
     watch(() => route.params.projectId, fetchData, {immediate: true})
-
-    const imageSrc = computed(() => {
-        return individualProject.value.project_image 
-        ? `${SERVER_URL}${individualProject.value.project_imageUrl}` 
-        : '/src/assets/Projects/future_projects.jpg';
-    });
 
     async function fetchData(id){
 
