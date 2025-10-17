@@ -83,7 +83,7 @@ function chooseFile() {
 }
 
 function removeFile() {
-  fileInput = null;
+  fileInput.value.value = ""; // Reset the file input element
   editForm.value.filename = "";
 }
 
