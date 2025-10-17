@@ -15,11 +15,10 @@ module.exports = {
             };
 
             // If file was uploaded, process it (similar to meeting minutes)
-            if (req.file && req.body.isUploaded !== "false") {
+            if (req.file) {
                 // Add file info to project (mapping to project model fields)
                 projectData.project_imageUrl = `/uploads/projects/${req.file.filename}`;
                 projectData.project_image = req.file.originalname;
-                projectData.isUploaded = "true";
             }
 
             const project_date = req.body.project_date ? new Date(req.body.project_date) : undefined;
@@ -109,11 +108,10 @@ module.exports = {
             const projectData = { project_name, project_description, project_type };
 
             // If file was uploaded, process it
-            if (req.file && req.body.isUploaded !== "false") {
+            if (req.file) {
                 // Add file info to project (mapping to project model fields)
                 projectData.project_imageUrl = `/uploads/projects/${req.file.filename}`;
                 projectData.project_image = req.file.originalname;
-                projectData.isUploaded = "true";
             }
 
             const updatedProject = await Project.findByIdAndUpdate(req.params.id, projectData, { new: true });

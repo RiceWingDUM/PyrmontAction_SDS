@@ -30,9 +30,9 @@
       <div class="row">
         <label class="lbl">Attach Image</label>
         <div class="fileZone">
-          <input ref="fileEl" type="file" accept="image/*" @change="chooseFile" />
-          <div v-if="projectForm.file" class="fileList">
-            <span class="chip-name">🖼️ {{ projectForm.file.name }}</span>
+          <input ref="fileInput" type="file" accept="image/*" @change="chooseFile" />
+          <div v-if="projectForm.project_image" class="fileList">
+            <span class="chip-name">🖼️ {{ projectForm.project_image }}</span>
             <button class="chip-x" title="Remove" @click="removeFile">×</button>
           </div>
           <div v-else class="hint">Select an image file…</div>
@@ -123,7 +123,6 @@ const projectForm = ref({
   project_type: 'open',
   file: null,
   project_image: "",
-  isUploaded: "false",
   project_date: new Date().toISOString().split('T')[0], // Initialize with current date
 })
 
@@ -135,21 +134,19 @@ onUnmounted(() => {
   projectList.value = [];
 });
 
-const fileEl = ref(null)
+const fileInput = ref(null)
 
 const canSave = computed(() => projectForm.value.project_name.trim().length > 0)
 
-function chooseFile(e) {
-  const file = e.target.files[0];
-  projectForm.value.file = file;
+function chooseFile() {
+  const file = fileInput.value.files[0];
+  projectForm.value.project_image = file.name;
   console.log('File selected:', file);
 }
 
 function removeFile() { 
-    if (fileEl.value) {
-      fileEl.value.value = '';
-    }
-    projectForm.value.file = null;
+    fileInput.value.value = '';
+    projectForm.value.project_image = '';
 }
 
 function clearDraft() {
@@ -157,11 +154,9 @@ function clearDraft() {
   projectForm.value.project_name = '';
   projectForm.value.project_description = '';
   projectForm.value.project_type = 'open';
-  projectForm.value.file = null;
   projectForm.value.project_image = "";
-  projectForm.value.isUploaded = "false";
   projectForm.value.project_date = new Date().toISOString().split('T')[0]; // Reset to current date
-  if (fileEl.value) fileEl.value.value = '';
+  fileInput.value.value = '';
 }
 
 async function create() {
@@ -171,32 +166,28 @@ async function create() {
     formData.append('project_name', projectForm.value.project_name);
     formData.append('project_description', projectForm.value.project_description);
     formData.append('project_type', projectForm.value.project_type);
-    formData.append('isUploaded', "true");
     formData.append('project_date', projectForm.value.project_date);
     
     // Append image file if selected
-    if (projectForm.value.file) {
-      formData.append('image', projectForm.value.file);
-      console.log('File appended to FormData:', projectForm.value.file.name);
+    if (fileInput.value.files[0]) {
+      formData.append('image', fileInput.value.files[0]);
+      console.log('File appended to FormData:', fileInput.value.files[0].name);
     } else {
       console.log('No file selected for create');
     }
 
     console.log('FormData entries for create:', [...formData.entries()]);
 
-    // Create new project with files
     const response = await services.createProject(userStore.getToken, formData);
-    projectForm.value._id = response._id;
-    projectForm.value.project_image = response.project_image || "";
-    projectForm.value.isUploaded = response.isUploaded || "false";
 
     const newProject = {
       ...projectForm.value,
-      _id: response._id
+      _id: response._id,
+      project_image: response.project_image
     };
-    
-    projectList.value.push(newProject);
-  
+
+    projectList.value.unshift(newProject);
+
     console.log('Created new project:', response);
     emits('projectsUpdated', projectList.value);
 
