@@ -16,17 +16,14 @@
       <div class="row">
         <label class="lbl">Attach File</label>
         <div class="fileZone">
-          <input ref="fileEl" type="file" accept="application/pdf" @change="chooseFile" />
-          <div v-if="editForm.file" class="fileList">
-            <span class="chip-name">📄 {{ editForm.file.name }}</span>
-            <button class="chip-x" title="Remove" @click="removeFile">×</button>
-          </div>
-          <div v-else-if="editForm.filename" class="fileList">
+          <input type="file" accept="application/pdf" @change="chooseFile" ref="fileInput" />
+          <div v-if="editForm.filename" class="fileList">
             <span class="chip-name">📄 {{ editForm.filename }}</span>
-            <button class="chip-x" title="Remove" @click="removeUploadedFile">×</button>
+            <button class="chip-x" title="Remove" @click="removeFile">×</button>
           </div>
           <div v-else class="hint">No file chosen</div>
         </div>
+        <div v-if="fileError" class="error-message">{{ fileError }}</div>
       </div>
 
       <div class="actions">
@@ -42,8 +39,6 @@ import { ref, computed, watch } from 'vue';
 import { useUserStore } from '../../../../stores/authStore';
 import services from '../../dashboardServices';
 
-const userStore = useUserStore();
-
 const props = defineProps({
   meeting: {
     type: Object,
@@ -51,19 +46,13 @@ const props = defineProps({
   }
 });
 
-const fileEl = ref(null);
+const userStore = useUserStore();
+const fileError = ref('');
+const fileInput = ref(null);
+const editForm = ref({_id: null, title: '', note: '', filename: "" });
+const showEditModal = computed(() => !!props.meeting);
 
 const emits = defineEmits(['meetingUpdated', 'closeModal']);
-
-const editForm = ref({
-  _id: null,
-  title: '',
-  note: '',
-  filename: "",
-  isUploaded: false,
-});
-
-const showEditModal = computed(() => !!props.meeting);
 
 // Watch for meeting prop changes
 watch(() => props.meeting, (newMeeting) => {
@@ -72,48 +61,45 @@ watch(() => props.meeting, (newMeeting) => {
     editForm.value.title = newMeeting.title;
     editForm.value.note = newMeeting.note;
     editForm.value.filename = newMeeting.filename;
-    editForm.value.isUploaded = newMeeting.isUploaded;
   }
 }, { immediate: true });
 
 function closeEditModal() {
-  editForm.value = { _id: null, title: '', note: '', filename: "", isUploaded: false };
-  fileEl.value.value = ''; // Reset the file input element
+  editForm.value = { _id: null, title: '', note: '', filename: "" };
+  fileError.value = '';
   emits('closeModal');
 }
 
-function chooseFile(e) {
-  const file = e.target.files[0]; // Access the first file directly
-  editForm.value.file = file; // Assign the single file to the form
-  editForm.value.isUploaded = "false";
-  console.log('File selected:', file); // Debug log
+function chooseFile() {
+  fileError.value = "";
+  const file = fileInput.value.files[0]; // Access the first file directly
+  if (file.name === props.meeting.filename) {
+    fileError.value = 'The selected file is the same as the existing uploaded file.';
+    fileInput.value.value = "";
+    return; // No change in file
+  }
+  editForm.value.filename = file.name; // Assign the single file to the form
+  console.log('File selected:', file);
 }
 
 function removeFile() {
-  if (fileEl.value) {
-    fileEl.value.value = ''; // Reset the file input element
-  }
-  editForm.value.file = null;
-}
-
-function removeUploadedFile() {
+  fileInput = null;
   editForm.value.filename = "";
 }
 
 async function saveEdit() {
   try {
     const formData = new FormData();
+    formData.append('_id', editForm.value._id);
     formData.append('title', editForm.value.title);
     formData.append('note', editForm.value.note);
 
-    if (editForm.value.file && editForm.value.isUploaded === "false") {
-      formData.append('file', editForm.value.file);
+    if (editForm.value.filename !== props.meeting.filename && fileInput.value.files[0]) {
+      formData.append('file', fileInput.value.files[0]);
     }
 
     const response = await services.updateMeetingWithFile(userStore.getToken, editForm.value._id, formData);
-    editForm.value.filename = response.filename || "";
-    editForm.value.isUploaded = response.isUploaded || "false";
-    emits('meetingUpdated', { ...editForm.value, ...response });
+    emits('meetingUpdated', { ...editForm.value.file, ...response });
     closeEditModal();
   } catch (error) {
     console.error('Failed to save edit:', error);

@@ -6,7 +6,6 @@ const meetingMinuteSchema = new mongoose.Schema({
   status: { type: String, enum: ['draft', 'published'], default: 'draft' },
   fileUrl: { type: String }, // Optional - can be null if no file uploaded
   filename: { type: String }, // Store original filename for display
-  isUploaded: { type:String, default: "false" },
 }, { timestamps: true });
 
 const MeetingMinute = mongoose.model('MeetingMinute', meetingMinuteSchema);
