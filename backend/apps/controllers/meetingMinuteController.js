@@ -29,13 +29,13 @@ module.exports = {
   // *** Read ***
   // List published
   async getPublishedMeeting(_req, res) {
-    const publishedMinutes = await MeetingMinute.find({ status: 'published' }).sort({ meetingDate: -1 });
+    const publishedMinutes = await MeetingMinute.find({ status: 'published' }).sort({ createdAt: -1 });
     res.json(publishedMinutes);
   },
 
   // List all
   async getAllMeetings(_req, res) {
-    const allMinutes = await MeetingMinute.find().sort({ meetingDate: -1 });
+    const allMinutes = await MeetingMinute.find().sort({ createdAt: -1 });
     res.json(allMinutes);
   },
 

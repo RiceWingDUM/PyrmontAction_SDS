@@ -115,6 +115,8 @@ const props = defineProps({
 const emits = defineEmits(['projectsUpdated']);
 
 const projectList = ref([]);
+const selectedProject = ref(null);
+const fileInput = ref(null)
 
 const projectForm = ref({
   _id: null,
@@ -134,7 +136,6 @@ onUnmounted(() => {
   projectList.value = [];
 });
 
-const fileInput = ref(null)
 
 const canSave = computed(() => projectForm.value.project_name.trim().length > 0)
 
@@ -196,8 +197,6 @@ async function create() {
     console.error('Failed to create project:', error);
   }
 }
-
-const selectedProject = ref(null);
 
 function startEdit(project) {
   selectedProject.value = project;

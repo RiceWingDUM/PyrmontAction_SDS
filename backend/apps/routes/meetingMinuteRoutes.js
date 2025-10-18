@@ -19,6 +19,7 @@ router.get('/',
     jwtAuth.verifyRole(['admin']),
     ctrl.getAllMeetings
 );
+
 // List published
 router.get('/published', 
     jwtAuth.verifyToken,

@@ -49,7 +49,7 @@ const props = defineProps({
 const userStore = useUserStore();
 const fileError = ref('');
 const fileInput = ref(null);
-const editForm = ref({_id: null, title: '', note: '', filename: "" });
+const editForm = ref({_id: null, title: '', note: '', filename: '' });
 const showEditModal = computed(() => !!props.meeting);
 
 const emits = defineEmits(['meetingUpdated', 'closeModal']);
@@ -65,17 +65,18 @@ watch(() => props.meeting, (newMeeting) => {
 }, { immediate: true });
 
 function closeEditModal() {
-  editForm.value = { _id: null, title: '', note: '', filename: "" };
+  editForm.value = { _id: null, title: '', note: '', filename: '' };
+  fileInput.value.value = '';
   fileError.value = '';
   emits('closeModal');
 }
 
 function chooseFile() {
-  fileError.value = "";
+  fileError.value = '';
   const file = fileInput.value.files[0]; // Access the first file directly
   if (file.name === props.meeting.filename) {
     fileError.value = 'The selected file is the same as the existing uploaded file.';
-    fileInput.value.value = "";
+    fileInput.value.value = '';
     return; // No change in file
   }
   editForm.value.filename = file.name; // Assign the single file to the form
@@ -83,8 +84,8 @@ function chooseFile() {
 }
 
 function removeFile() {
-  fileInput.value.value = ""; // Reset the file input element
-  editForm.value.filename = "";
+  fileInput.value.value = ''; // Reset the file input element
+  editForm.value.filename = '';
 }
 
 async function saveEdit() {
@@ -99,7 +100,7 @@ async function saveEdit() {
     }
 
     const response = await services.updateMeetingWithFile(userStore.getToken, editForm.value._id, formData);
-    emits('meetingUpdated', { ...editForm.value.file, ...response });
+    emits('meetingUpdated', { ...response });
     closeEditModal();
   } catch (error) {
     console.error('Failed to save edit:', error);

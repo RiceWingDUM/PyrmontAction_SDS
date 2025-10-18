@@ -102,7 +102,7 @@ const props = defineProps({
 const userStore = useUserStore();
 const meetingList = ref([]);
 const fileInput = ref(null)
-const meetingForm = ref({_id: null, title: '', note: '', status: 'draft', filename: "", createdAt: null})
+const meetingForm = ref({_id: null, title: '', note: '', status: 'draft', filename: '', createdAt: null})
 
 watch(() => props.meetingsData, (newMeetings) => {
   meetingList.value = newMeetings;
@@ -123,8 +123,8 @@ function chooseFile() {
 }
 
 function removeFile() { 
-  fileInput.value.value = ""; // Reset the file input element
-  meetingForm.value.filename = "";
+  fileInput.value.value = ''; // Reset the file input element
+  meetingForm.value.filename = '';
 
 }
 
@@ -133,9 +133,9 @@ function clearDraft() {
   meetingForm.value.title = '';
   meetingForm.value.note = '';
   meetingForm.value.status = 'draft';
-  meetingForm.value.filename = "";
+  meetingForm.value.filename = '';
   meetingForm.value.createdAt = null;
-  fileInput.value.value = "";
+  fileInput.value.value = '';
 }
 
 async function create(status) {
