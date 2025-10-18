@@ -98,9 +98,9 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { useUserStore } from '../../../stores/authStore'
-import services from '../../accountDashboard/dashboardServices';
+import services from '../editorialServices';
 import EditProjectsAdmin from './EditProjectsAdmin.vue';
 
 const userStore = useUserStore();
@@ -171,7 +171,7 @@ async function create() {
     
     // Append image file if selected
     if (fileInput.value.files[0]) {
-      formData.append('image', fileInput.value.files[0]);
+      formData.append('file', fileInput.value.files[0]);
       console.log('File appended to FormData:', fileInput.value.files[0].name);
     } else {
       console.log('No file selected for create');

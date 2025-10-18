@@ -4,7 +4,7 @@
         <Carousel v-else-if="project.length > 0" class="carousel" v-slot="{ currentSlide }">
             <Slide v-for="(projectItem, index) in project" :key="projectItem._id">
                 <div v-show="currentSlide === index + 1" class="slide-info">
-                    <img :src="`/src/assets/Projects/${projectItem.project_image}`" alt="image" />
+                    <img :src="`${SERVER_URL}${projectItem.project_imageUrl}`" alt="image" />
                     <div class="overlay">
                         <h1 class="overlay-header">{{ projectItem.project_name }}</h1>
                         <ul class="button">
@@ -25,6 +25,7 @@
 </template>
 
 <script setup>
+import SERVER_URL from '@/config';
 import Carousel from "../components/Carousel.vue";
 import Slide from "../components/Slide.vue";
 import CoreValues from "../components/CoreValues.vue"

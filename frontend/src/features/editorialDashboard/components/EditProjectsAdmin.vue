@@ -50,7 +50,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useUserStore } from '../../../stores/authStore';
-import services from '../../accountDashboard/dashboardServices';
+import services from '../editorialServices';
 
 const props = defineProps({
   project: {
@@ -119,7 +119,7 @@ async function saveEdit() {
     formData.append('project_date', editForm.value.project_date);
     
     if (editForm.value.project_image != props.project.project_image && fileInput.value.files[0]) {
-      formData.append('image', fileInput.value.files[0]);
+      formData.append('file', fileInput.value.files[0]);
     }
 
     const response = await services.updateProjectWithFile(userStore.getToken, editForm.value._id, formData);
