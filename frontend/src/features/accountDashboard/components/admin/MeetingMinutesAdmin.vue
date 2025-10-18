@@ -17,9 +17,9 @@
       <div class="row">
         <label class="lbl">Attach PDF</label>
         <div class="fileZone">
-          <input ref="fileEl" type="file" accept="application/pdf" @change="chooseFile" />
-          <div v-if="meetingForm.file" class="fileList">
-            <span class="chip-name">📄 {{ meetingForm.file.name }}</span>
+          <input ref="fileInput" type="file" accept="application/pdf" @change="chooseFile" />
+          <div v-if="meetingForm.filename" class="fileList">
+            <span class="chip-name">📄 {{ meetingForm.filename }}</span>
             <button class="chip-x" title="Remove" @click="removeFile">×</button>
           </div>
           <div v-else class="hint">Select a PDF file…</div>
@@ -87,14 +87,10 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { useUserStore } from '../../../../stores/authStore'
 import services from '../../dashboardServices';
 import EditMeetingsAdmin from './EditMeetingsAdmin.vue';
-
-const userStore = useUserStore();
-
-
 
 const props = defineProps({
   meetingsData: {
@@ -103,25 +99,13 @@ const props = defineProps({
   }
 });
 
-const emits = defineEmits(['meetingsUpdated']);
-
+const userStore = useUserStore();
 const meetingList = ref([]);
+const fileInput = ref(null)
+const meetingForm = ref({_id: null, title: '', note: '', status: 'draft', filename: '', createdAt: null})
 
-const meetingForm = ref({
-  _id: null,
-  title: '',
-  note: '',
-  status: 'draft',
-  file: null,
-  filename: "",
-  isUploaded: "false",
-  createdAt: null,
-})
-
-const fileEl = ref(null)
-
-watch(() => props.meetingsData, (newData) => {
-  meetingList.value = newData;
+watch(() => props.meetingsData, (newMeetings) => {
+  meetingList.value = newMeetings;
 }, { immediate: true });
 
 onUnmounted(() => {
@@ -130,17 +114,18 @@ onUnmounted(() => {
 
 const canSave = computed(() => meetingForm.value.title.trim().length > 0)
 const canPublish = computed(() => meetingForm.value.title.trim().length > 0)
+const emits = defineEmits(['meetingsUpdated']);
 
-function chooseFile(e) {
-  const file = e.target.files[0]; // Access the first file directly
-  meetingForm.value.file = file; // Assign the single file to the form
+function chooseFile() {
+  const file = fileInput.value.files[0]; // Access the first file directly
+  meetingForm.value.filename = file.name;
   console.log('File selected:', file); // Debug log
 }
+
 function removeFile() { 
-    if (fileEl.value) {
-      fileEl.value.value = ''; // Reset the file input element
-    }
-    meetingForm.value.file = null;
+  fileInput.value.value = ''; // Reset the file input element
+  meetingForm.value.filename = '';
+
 }
 
 function clearDraft() {
@@ -148,11 +133,9 @@ function clearDraft() {
   meetingForm.value.title = '';
   meetingForm.value.note = '';
   meetingForm.value.status = 'draft';
-  meetingForm.value.file = null;
-  meetingForm.value.filename = "";
-  meetingForm.value.isUploaded = "false";
+  meetingForm.value.filename = '';
   meetingForm.value.createdAt = null;
-  if (fileEl.value) fileEl.value.value = '';
+  fileInput.value.value = '';
 }
 
 async function create(status) {
@@ -163,12 +146,11 @@ async function create(status) {
     formData.append('title', meetingForm.value.title);
     formData.append('note', meetingForm.value.note);
     formData.append('status', meetingForm.value.status);
-    formData.append('isUploaded', "true");
     
     // Append PDF file if selected
-    if (meetingForm.value.file) {
-      formData.append('file', meetingForm.value.file); // Use 'file' as the field name (matches backend)
-      console.log('File appended to FormData:', meetingForm.value.file.name); // Debug log
+    if (fileInput.value.files[0]) {
+      formData.append('file', fileInput.value.files[0]); // Use 'file' as the field name (matches backend)
+      console.log('File appended to FormData:', fileInput.value.files[0].name); // Debug log
     } else {
       console.log('No file selected for create'); // Debug log
     }
@@ -177,18 +159,16 @@ async function create(status) {
 
     // Create new meeting with files
     const response = await services.createMeetingMinute(userStore.getToken, formData);
-    meetingForm.value._id = response._id;
-    meetingForm.value.createdAt = response.createdAt;
-    meetingForm.value.filename = response.filename || "";
-    meetingForm.value.isUploaded = response.isUploaded || "false";
-
+    
+    // Create a new object instead of modifying meetingForm directly
     const newMeeting = {
       ...meetingForm.value,
       _id: response._id,
-      createdAt: response.createdAt
+      createdAt: response.createdAt,
+      filename: response.filename
     };
     
-    meetingList.value.push(newMeeting);
+    meetingList.value.unshift(newMeeting);
   
     console.log('Created new meeting:', response);
     emits('meetingsUpdated', meetingList.value);
@@ -205,7 +185,7 @@ async function publishItem(meeting) {
       throw new Error('Meeting ID is required');
     }
 
-    const response = await services.publishMeetingMinute(userStore.getToken, meeting._id, {status: 'published'});
+    await services.publishMeetingMinute(userStore.getToken, meeting._id, {status: 'published'});
 
     const index = meetingList.value.findIndex(m => m._id === meeting._id);
     if (index !== -1) {
@@ -228,6 +208,8 @@ function closeEditModal() {
   selectedMeeting.value = null;
 }
 
+// Returns Udpated Meeting after Edit Page
+// Takes ID and update meeting list
 function updateMeeting(updatedMeeting) {
   const index = meetingList.value.findIndex(m => m._id === updatedMeeting._id);
   if (index !== -1) {

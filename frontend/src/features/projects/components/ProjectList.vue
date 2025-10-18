@@ -9,7 +9,7 @@
                 }
             }">
                 <div class="project-list-image">
-                    <img :src="`/src/assets/Projects/${projectItem.project_image}`" alt="project Image" />
+                    <img :src="`${SERVER_URL}${projectItem.project_imageUrl}`" alt="project Image" />
                 </div>
                 <div class="project-list-text">
                     <h2 class="project-title">{{ projectItem.project_name.split(' ')
@@ -26,6 +26,7 @@
 </template>
 
 <script setup>
+import SERVER_URL from '@/config';
 defineProps({
     projects: {
         type: Array,

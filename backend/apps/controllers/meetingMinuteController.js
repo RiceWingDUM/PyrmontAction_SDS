@@ -8,16 +8,13 @@ module.exports = {
     console.log('Uploaded file:', req.file);
     try {
       const { title, note, status } = req.body;
-      
-
       const meetingData = { title, note, status };
 
       // If file was uploaded, process it
-      if (req.file && req.body.isUploaded !== "false") {
+      if (req.file) {
         // Add file info to meeting minute
         meetingData.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
         meetingData.filename = req.file.originalname;
-        meetingData.isUploaded = "true"; // Auto-publish on file upload
       }
 
       const meeting = new MeetingMinute(meetingData);
@@ -32,13 +29,13 @@ module.exports = {
   // *** Read ***
   // List published
   async getPublishedMeeting(_req, res) {
-    const publishedMinutes = await MeetingMinute.find({ status: 'published' }).sort({ meetingDate: -1 });
+    const publishedMinutes = await MeetingMinute.find({ status: 'published' }).sort({ createdAt: -1 });
     res.json(publishedMinutes);
   },
 
   // List all
   async getAllMeetings(_req, res) {
-    const allMinutes = await MeetingMinute.find().sort({ meetingDate: -1 });
+    const allMinutes = await MeetingMinute.find().sort({ createdAt: -1 });
     res.json(allMinutes);
   },
 
@@ -80,11 +77,10 @@ module.exports = {
       const meetingData = { title, note, status };
 
       // If file was uploaded, process it
-      if (req.file && req.body.isUploaded !== "false") {
+      if (req.file) {
         // Add file info to meeting minute
         meetingData.fileUrl = `/uploads/meeting-minutes/${req.file.filename}`;
         meetingData.filename = req.file.originalname;
-        meetingData.isUploaded = "true"; // Auto-publish on file upload
       }
 
       const updatedMeeting = await MeetingMinute.findByIdAndUpdate(req.params.id, meetingData, { new: true });

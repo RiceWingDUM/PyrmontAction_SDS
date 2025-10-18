@@ -15,7 +15,7 @@
         <div class="project-card__image-container">
           <img
               class="project-card__image"
-              :src="`/src/assets/Projects/${project.project_image}`"
+              :src="`${SERVER_URL}${project.project_imageUrl}`"
               :alt="project.title"
           />
           <!-- Optional overlay that appears on hover
@@ -46,6 +46,7 @@
 </template>
 
 <script setup>
+import SERVER_URL from '@/config';
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -93,6 +94,7 @@ function filteredProjects() {
   line-height: 1.2;
   background: linear-gradient(to right, #0077b6, #00b4d8);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: 1px;
 }
@@ -178,6 +180,7 @@ function filteredProjects() {
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -192,6 +195,7 @@ function filteredProjects() {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 

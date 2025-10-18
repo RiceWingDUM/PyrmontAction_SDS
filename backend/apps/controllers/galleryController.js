@@ -30,39 +30,6 @@ module.exports = {
         }
     },
 
-    // Upload multiple gallery images
-    async uploadMultipleGalleryImages(req, res) {
-        try {
-            if (!req.files || req.files.length === 0) {
-                return res.status(400).json({ error: 'No images uploaded' });
-            }
-
-            const uploadResults = [];
-
-            for (const file of req.files) {
-                // Create gallery image record
-                const galleryImage = new Gallery({
-                    image_file_name: file.filename,
-                    image_type: 'uploaded',
-                    caption: '',
-                    alt: file.originalname
-                });
-
-                await galleryImage.save();
-
-                uploadResults.push({ image: galleryImage });
-            }
-
-            res.status(201).json({
-                message: `${uploadResults.length} images uploaded successfully`,
-                results: uploadResults
-            });
-        } catch (error) {
-            console.error('Error uploading gallery images:', error);
-            return res.status(400).json({ error: 'Error uploading images' });
-        }
-    },
-
     // Read
 
     async getAllGalleryImage(req, res){

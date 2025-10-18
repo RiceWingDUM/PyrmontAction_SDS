@@ -12,12 +12,12 @@ router.post('/',
 );
 
 // Upload multiple gallery images
-router.post('/multiple',
-    jwtAuth.verifyToken,
-    jwtAuth.verifyRole(['admin', 'editor']),
-    upload.galleryImages,
-    controller.uploadMultipleGalleryImages
-);
+// router.post('/',
+//     jwtAuth.verifyToken,
+//     jwtAuth.verifyRole(['admin', 'editor']),
+//     upload.galleryImages,
+//     controller.uploadGalleryImages
+// );
 
 // Read
 router.get('/', controller.getAllGalleryImage);
