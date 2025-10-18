@@ -80,7 +80,7 @@ watch(() => props.project, (newProject) => {
     editForm.value.project_description = newProject.project_description;
     editForm.value.project_type = newProject.project_type;
     editForm.value.project_image = newProject.project_image;
-    editForm.value.project_date = newProject.project_date ? new Date(newProject.project_date).toISOString().split('T')[0] : '';
+    editForm.value.project_date = new Date(newProject.project_date).toISOString().split('T')[0];
   }
 }, { immediate: true });
 

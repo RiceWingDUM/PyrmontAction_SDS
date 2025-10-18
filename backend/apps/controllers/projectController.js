@@ -11,7 +11,8 @@ module.exports = {
             const projectData = { 
                 project_name, 
                 project_description, 
-                project_type: project_type || 'open'
+                project_type: project_type,
+                project_date: new Date(req.body.project_date)
             };
 
             // If file was uploaded, process it (similar to meeting minutes)
@@ -20,9 +21,6 @@ module.exports = {
                 projectData.project_imageUrl = `/uploads/projects/${req.file.filename}`;
                 projectData.project_image = req.file.originalname;
             }
-
-            const project_date = req.body.project_date ? new Date(req.body.project_date) : undefined;
-            if (project_date) projectData.project_date = project_date;
 
             const project = new Project(projectData);
             await project.save();
@@ -105,11 +103,14 @@ module.exports = {
         console.log('Uploaded file:', req.file);
         try {
             const { project_name, project_description, project_type } = req.body;
-            const projectData = { project_name, project_description, project_type };
+            const projectData = { 
+                project_name, project_description, project_type,
+                project_date: new Date(req.body.project_date)
+             };
 
             // If file was uploaded, process it
             if (req.file) {
-                // Add file info to project (mapping to project model fields)
+                // Add file info to project (mapping to project model fields),
                 projectData.project_imageUrl = `/uploads/projects/${req.file.filename}`;
                 projectData.project_image = req.file.originalname;
             }
