@@ -1,8 +1,6 @@
 const Event = require('../models/eventModel');
 
 module.exports = {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set to midnight local time
   // Create event with optional file upload
   async createEvent (req, res) {
     try {
