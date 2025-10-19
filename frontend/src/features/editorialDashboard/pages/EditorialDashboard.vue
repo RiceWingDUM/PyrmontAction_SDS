@@ -25,9 +25,9 @@
             />
           </div>
           <div v-if="currentTab === 'Gallery'">
-            <ProjectsAdmin 
-              :projectsData="gallery" 
-              @projectsUpdated="handleGalleryUpdated" 
+            <GalleryAdmin 
+              :galleryData="galleryItems" 
+              @galleryUpdated="handleGalleryUpdated" 
             />
           </div>
           <div v-else class="placeholder">
@@ -44,6 +44,7 @@ import { ref, onMounted } from 'vue'
 import { useUserStore } from '../../../stores/authStore'
 import services from '../editorialServices'
 import ProjectsAdmin from '../components/ProjectsAdmin.vue'
+import GalleryAdmin from '../components/GalleryAdmin.vue'
 
 const userStore = useUserStore()
 
@@ -57,6 +58,7 @@ const currentTab = ref('Projects')
 
 // Dynamic projects data from database
 const projects = ref([])
+const galleryItems = ref([]);
 
 // Load projects data
 async function loadProjects() {
@@ -70,8 +72,8 @@ async function loadProjects() {
 }
 async function loadGallery() {
   try {
-    const response = await services.getGallery(userStore.getToken)
-    gallery.value = response
+    const response = await services.getGalleryItems(userStore.getToken)
+    galleryItems.value = response
     console.log('Loaded gallery:', response)
   } catch (error) {
     console.error('Failed to load gallery:', error)
@@ -82,7 +84,7 @@ function handleProjectsUpdated(updatedProjects) {
   projects.value = updatedProjects
 }
 function handleGalleryUpdated(updatedGallery) {
-  gallery.value = updatedGallery
+  galleryItems.value = updatedGallery
 }
 
 onMounted(() => {
