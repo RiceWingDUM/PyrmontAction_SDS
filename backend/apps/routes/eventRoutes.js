@@ -5,14 +5,14 @@ const { upload } = require('../middlewares/fileUpload');
 
 router.post('/', 
     jwtAuth.verifyToken, 
-    jwtAuth.verifyRole(['admin', 'member']), 
+    jwtAuth.verifyRole(['admin', 'editor']), 
     upload.eventImage, 
     controller.createEvent
 );
 
 router.get('/upcoming', 
     jwtAuth.verifyToken,
-    jwtAuth.verifyRole(['admin', 'member']),
+    jwtAuth.verifyRole(['admin', 'editor']),
     controller.getUpcomingEvents
 );
 
@@ -22,7 +22,7 @@ router.get('/published',
 
 router.get('/completed',
     jwtAuth.verifyToken,
-    jwtAuth.verifyRole(['admin', 'member']),
+    jwtAuth.verifyRole(['admin', 'editor']),
     controller.getCompletedEvents
 );
 
@@ -32,20 +32,20 @@ router.get('/:id',
 
 router.put('/:id',
     jwtAuth.verifyToken,
-    jwtAuth.verifyRole(['admin', 'member']),
+    jwtAuth.verifyRole(['admin', 'editor']),
     upload.eventImage,
     controller.updateEvent
 );
 
 router.put('/:id/publish',
     jwtAuth.verifyToken,
-    jwtAuth.verifyRole(['admin', 'member']),
+    jwtAuth.verifyRole(['admin', 'editor']),
     controller.publishEvent
 );
 
 router.delete('/:id',
     jwtAuth.verifyToken,
-    jwtAuth.verifyRole(['admin']),
+    jwtAuth.verifyRole(['admin', 'editor']),
     controller.deleteEvent
 );
 
