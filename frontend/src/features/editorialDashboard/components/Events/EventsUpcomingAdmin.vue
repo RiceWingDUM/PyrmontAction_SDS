@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>Upcoming Events</h1>
-        <button @click="isAdding = true">Create Event</button>
+        <button @click="addEventModal = true">Create Event</button>
         <table>
             <thead>
                 <tr>
@@ -30,8 +30,16 @@
         </table>
 
         <AddEvents 
-            v-if="isAdding"
-            @close="isAdding = false"
+            v-if="addEventModal"
+            @addEvent="addEventToList"
+            @close="addEventModal = false"
+        />
+
+        <EditEvents
+            v-if="selectedEvent"
+            :eventData="selectedEvent"
+            @editEvent="updateEventfromList"
+            @close="selectedEvent = null"
         />
     </div>
 </template>
@@ -42,6 +50,7 @@ import { useUserStore } from '../../../../stores/authStore';
 import services from '../../editorialServices';
 import { formatDate, timeRange } from '../../../../utils/dateUtils';
 import AddEvents from './AddEventsAdmin.vue';
+import EditEvents from './EditEventsAdmin.vue';
 
 const props = defineProps({
   upcoming: {
@@ -50,9 +59,10 @@ const props = defineProps({
   }
 });
 
-const emits = defineEmits(['update']);
+const emits = defineEmits(['updateList']);
 const upcomingList = ref([]);
-const isAdding = ref(false);
+const addEventModal = ref(false);
+const selectedEvent = ref(null);
 
 watch(() => props.upcoming, (newData) => {
     upcomingList.value = newData;
@@ -72,7 +82,7 @@ async function handlePublish(event) {
             upcomingList.value[index].status = 'published';
         }
         
-        emits('update', upcomingList.value);
+        emits('updateList', upcomingList.value);
         
     } catch (error) {
         console.error('Failed to publish event:', error);
@@ -87,10 +97,25 @@ async function handleDelete(event) {
         }
         await services.deleteEvent(useUserStore().token, event._id);
         upcomingList.value = upcomingList.value.filter(m => m._id !== event._id);
-        emits('update', upcomingList.value);
+        emits('updateList', upcomingList.value);
     } catch (error) {
         console.error('Failed to delete event:', error);
     }
+}
+
+function addEventToList(newEvent) {
+    console.log('Updating upcoming events with:', newEvent);
+    upcomingList.value.unshift(newEvent);
+    emits('updateList', newEvent);
+}
+
+function updateEventfromList(updatedEvent) {
+    console.log('Updating upcoming events with:', updatedEvent);
+    const index = upcomingList.value.findIndex(event => event._id === updatedEvent._id);
+    if (index !== -1) {
+        upcomingList.value[index] = updatedEvent;
+    }
+    emits('updateList', upcomingList.value);
 }
 
 </script>

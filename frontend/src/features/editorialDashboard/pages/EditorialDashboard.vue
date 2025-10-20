@@ -110,7 +110,6 @@ function handleGalleryUpdated(updatedGallery) {
 
 function handleEventsUpdated(updatedEvents) {
   events.value.upcoming = updatedEvents.upcoming
-  events.value.completed = updatedEvents.completed
 }
 
 onMounted(() => {

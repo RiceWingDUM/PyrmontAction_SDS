@@ -7,7 +7,7 @@
         <div v-if="currentTab === 'upcoming'">
             <UpcomingEvents
                 :upcoming="upcomingList"
-                @update="updateUpcomingEvents"   
+                @updateList="updateUpcomingList"
             />
         </div>
         <div v-if="currentTab === 'completed'">
@@ -46,11 +46,8 @@ onUnmounted(() => {
   completedList.value = [];
 });
 
-
-
-function updateUpcomingEvents(updatedEvent) {
-    console.log('Updating upcoming events with:', updatedEvent);
-    upcomingList.value.unshift(updatedEvent);
+function updateUpcomingList(updatedEvent) {
+    // Event is already added in EventsUpcomingAdmin, just pass it up
     emits('eventsUpdated', { upcoming: upcomingList.value });
 }
 </script>

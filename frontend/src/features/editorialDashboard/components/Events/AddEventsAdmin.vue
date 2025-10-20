@@ -3,10 +3,10 @@
         <div class="modal-content">
             <h2>Add New Event</h2>
             <label>Event Title:
-                <input v-model="eventForm.title" type="text" placeholder="Enter event title" required/>
+                <input v-model="eventForm.title" type="text" :placeholder="'Enter event title'" required/>
             </label>
             <label>Date:
-                <input v-model="eventForm.date" type="date" required/>
+                <input v-model="eventForm.date" type="date" :min="todayDateStr()" required/>
             </label>
             <label>Start Time:
                 <input v-model="eventForm.startTime" type="time" />
@@ -19,6 +19,9 @@
             </label>
             <label>Description:
                 <textarea v-model="eventForm.description" placeholder="Enter event description" required></textarea>
+            </label>
+            <label>Attach Image:
+                <input type="file" accept="image/*" @change="chooseFile" ref="fileInput" required />
             </label>
             <div>
                 <button @click="addEvent('draft')">Draft</button>
@@ -33,20 +36,25 @@
     import { ref, computed, watch } from 'vue';
     import { useUserStore } from '../../../../stores/authStore';
     import services from '../../editorialServices';
-    import { isValidTimeRange, dateTimeStr } from '../../../../utils/dateUtils';
+    import { isValidTimeRange, dateTimeStr, todayDateStr } from '../../../../utils/dateUtils';
 
+    function chooseFile() {
+    const file = fileInput.value.files[0];
+    eventForm.value.imageName = file.name;
+    console.log('File selected:', file);
+    }
 
-    const emits = defineEmits(['update', 'close']);
-    
+    const emits = defineEmits(['addEvent', 'close']);
+    const fileInput = ref(null);
     const eventForm = ref({
         _id: null,
         title: '',
         description: '',
         location: '',
-        date: '',
+        date: todayDateStr(),
         startTime: '',
         endTime: '',
-        imageName: null,
+        imageName: '',
     });
 
     async function addEvent(status) {
@@ -65,15 +73,15 @@
             formData.append('endDate', endDate);
             formData.append('status', status);
 
+            if (fileInput.value.files[0]) {
+                formData.append('file', fileInput.value.files[0]);
+            } else {
+                alert('Please select an image file.');
+                return;
+            }
+
             const response = await services.createEvent(useUserStore().token, formData);
-            const newEvent = {
-                ... eventForm.value,
-                _id: response._id,
-                startDate: response.startDate,
-                endDate: response.endDate,
-                status: response.status,
-            };
-            emits('update', newEvent);
+            emits('addEvent', response);
             emits('close');
         } catch (error) {
             console.error('Failed to add event:', error);
