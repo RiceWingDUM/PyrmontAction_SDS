@@ -12,7 +12,7 @@
             </div>
             <div class="row">
                 <label class="lbl">Time:</label>
-                <span>{{ time(event) }}</span>
+                <span>{{ timeRange(event.startDate, event.endDate) }}</span>
             </div>
             <div class="row">
                 <label class="lbl">Location:</label>
@@ -35,8 +35,9 @@
 
 <script setup>
     import { ref, computed, watch } from 'vue';
-    import { useUserStore } from '../../../stores/authStore';
-    import services from '../editorialServices';
+    import { useUserStore } from '../../../../stores/authStore';
+    import services from '../../editorialServices';
+    import { formatDate, timeRange } from '../../../../utils/dateUtils';
 
     const props = defineProps({
         event: {
@@ -50,18 +51,6 @@
     const showViewModal = computed(() => {
         return !!props.event
     });
-
-    function formatDate(dateString) {
-    const date = new Date(dateString);
-    const options = { day: 'numeric', month: 'short', year: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
-}
-
-    const time = (event) => {
-        const startTime = new Date(event.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const endTime = new Date(event.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        return  startTime + ' - ' + endTime;
-    };
 </script>
 
 

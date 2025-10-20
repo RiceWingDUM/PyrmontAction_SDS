@@ -31,6 +31,9 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import ViewEvents from './ViewEvents.vue';
+import { useUserStore } from '../../../../stores/authStore';
+import services from '../../editorialServices';
+import { formatDate } from '../../../../utils/dateUtils';
 
 const props = defineProps({
   completed: {
@@ -47,18 +50,6 @@ watch(() => props.completed, (newData) => {
     console.log('Received completed events data:', eventList.value);
 }, { immediate: true });
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const options = { day: 'numeric', month: 'short', year: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
-}
-
-const startTime = (startDate) => {
-    return new Date(startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-};
-const endTime = (endDate) => {
-    return new Date(endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-};
 </script>
 
 

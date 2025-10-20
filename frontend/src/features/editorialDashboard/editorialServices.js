@@ -18,7 +18,8 @@ const editorialServices = {
     createEvent(token, formData){ return api.postFormData("api/events/", formData, token);},
     getUpcomingEvents(token){ return api.get("api/events/upcoming", token);},
     getCompletedEvents(token){ return api.get("api/events/completed", token);},
-    updateEvent(token, id, data){ return api.put(`api/events/${id}`, data, token);},
+    updateEvent(token, id, data){ return api.putFormData(`api/events/${id}`, data, token);},
+    publishEvent(token, id){ return api.put(`api/events/${id}/publish`, {}, token);},
     deleteEvent(token, id){ return api.delete(`api/events/${id}`, token);}
 
 }

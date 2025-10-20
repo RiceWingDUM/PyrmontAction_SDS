@@ -51,7 +51,7 @@ import { useUserStore } from '../../../stores/authStore'
 import services from '../editorialServices'
 import ProjectsAdmin from '../components/ProjectsAdmin.vue'
 import GalleryAdmin from '../components/GalleryAdmin.vue'
-import EventsAdmin from '../components/EventsAdmin.vue'
+import EventsAdmin from '../components/Events/EventsAdmin.vue'
 
 const userStore = useUserStore()
 

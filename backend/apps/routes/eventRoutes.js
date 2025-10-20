@@ -33,7 +33,14 @@ router.get('/:id',
 router.put('/:id',
     jwtAuth.verifyToken,
     jwtAuth.verifyRole(['admin', 'member']),
+    upload.eventImage,
     controller.updateEvent
+);
+
+router.put('/:id/publish',
+    jwtAuth.verifyToken,
+    jwtAuth.verifyRole(['admin', 'member']),
+    controller.publishEvent
 );
 
 router.delete('/:id',
@@ -41,6 +48,5 @@ router.delete('/:id',
     jwtAuth.verifyRole(['admin']),
     controller.deleteEvent
 );
-
 
 module.exports = router;
