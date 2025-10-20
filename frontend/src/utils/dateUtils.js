@@ -15,7 +15,7 @@ export function timeRange(start, end) {
     return startTime + ' - ' + endTime;
 };
 
-export function isValidTimeRange(startTime, endTime) {
+export function validTimes(startTime, endTime) {
     return new Date('1970-01-01T' + startTime) < new Date('1970-01-01T' + endTime);
 }
 
@@ -49,6 +49,8 @@ export function getLocalTime(date) { // date in ISO format
     return `${hours}:${minutes}`;
 }
 
-export function todayDateStr() {
-    return new Date().toISOString().split('T')[0];
+export function today() {
+    const today = new Date().toISOString();
+    console.log('Today in ISO:', getLocalDate(today));
+    return getLocalDate(today);
 }

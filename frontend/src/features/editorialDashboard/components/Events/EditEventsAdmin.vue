@@ -6,7 +6,7 @@
                 <input v-model="editForm.title" type="text" :placeholder="'Enter event title'" required/>
             </label>
             <label>Date:
-                <input v-model="editForm.date" type="date" :min="todayDateStr()" required/>
+                <input v-model="editForm.date" type="date" :min="today()" required/>
             </label>
             <label>Start Time:
                 <input v-model="editForm.startTime" type="time" />
@@ -40,7 +40,7 @@
 
 <script setup>
     import { ref } from 'vue';
-    import { todayDateStr, getLocalDate, getLocalTime, isValidTimeRange, dateTimeStr } from '../../../../utils/dateUtils';
+    import { today, getLocalDate, getLocalTime, validTimes, dateTimeStr } from '../../../../utils/dateUtils';
     import { useUserStore } from '../../../../stores/authStore';
     import services from '../../editorialServices';
     // Props
@@ -85,7 +85,7 @@
 
     async function editEvent() {
         try {
-            if (!isValidTimeRange(editForm.value.startTime, editForm.value.endTime)) {
+            if (!validTimes(editForm.value.startTime, editForm.value.endTime)) {
                 alert('End time must be after start time.');
                 return;
             }

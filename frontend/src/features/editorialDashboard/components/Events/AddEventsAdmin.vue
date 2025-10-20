@@ -6,7 +6,7 @@
                 <input v-model="eventForm.title" type="text" :placeholder="'Enter event title'" required/>
             </label>
             <label>Date:
-                <input v-model="eventForm.date" type="date" :min="todayDateStr()" required/>
+                <input v-model="eventForm.date" type="date" :min="today()" required/>
             </label>
             <label>Start Time:
                 <input v-model="eventForm.startTime" type="time" />
@@ -36,7 +36,7 @@
     import { ref, computed, watch } from 'vue';
     import { useUserStore } from '../../../../stores/authStore';
     import services from '../../editorialServices';
-    import { isValidTimeRange, dateTimeStr, todayDateStr } from '../../../../utils/dateUtils';
+    import { validTimes, dateTimeStr, today } from '../../../../utils/dateUtils';
 
     function chooseFile() {
     const file = fileInput.value.files[0];
@@ -51,7 +51,7 @@
         title: '',
         description: '',
         location: '',
-        date: todayDateStr(),
+        date: today(),
         startTime: '',
         endTime: '',
         imageName: '',
@@ -59,7 +59,7 @@
 
     async function addEvent(status) {
         try {
-            if (!isValidTimeRange(eventForm.value.startTime, eventForm.value.endTime)) {
+            if (!validTimes(eventForm.value.startTime, eventForm.value.endTime)) {
                 alert('End time must be after start time.');
                 return;
             }
