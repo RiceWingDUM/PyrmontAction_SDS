@@ -13,6 +13,15 @@ const editorialServices = {
     uploadGalleryImage(token, formData){ return api.postFormData("api/gallery/", formData, token);},
     updateGalleryImage(token, id, formData){ return api.putFormData(`api/gallery/${id}`, formData, token);},
     deleteGalleryImage(token, id){ return api.delete(`api/gallery/${id}`, token);},
+
+    // Event Management
+    createEvent(token, formData){ return api.postFormData("api/events/", formData, token);},
+    getUpcomingEvents(token){ return api.get("api/events/upcoming", token);},
+    getCompletedEvents(token){ return api.get("api/events/completed", token);},
+    updateEvent(token, id, data){ return api.putFormData(`api/events/${id}`, data, token);},
+    publishEvent(token, id){ return api.put(`api/events/${id}/publish`, {}, token);},
+    deleteEvent(token, id){ return api.delete(`api/events/${id}`, token);}
+
 }
 
 export default editorialServices;

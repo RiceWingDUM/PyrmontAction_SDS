@@ -60,6 +60,10 @@
     function chooseFile() {
         fileError.value = '';
         const file = fileInput.value.files[0];
+        if (!file) {
+            editForm.value.filename = '';
+            return;
+        }
         if (file.name === props.item.image_file_name) {
             fileError.value = 'The selected file is the same as the existing uploaded file.';
             fileInput.value.value = '';
