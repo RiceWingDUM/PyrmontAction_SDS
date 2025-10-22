@@ -1,0 +1,3383 @@
+{
+	"info": {
+		"_postman_id": "40736723-db8c3e0f-a3ac-4d79-ba36-855db6ce14f2",
+		"name": "Pyrmont API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Negative Tests",
+			"item": [
+				{
+					"name": "Jake's sign up rejection - Missing required fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5461444e-dcae-4447-9dc9-d4800b6b7309",
+								"exec": [
+									"pm.test(\"Missing Email and Password error message is returned\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"`Email` is required\");",
+									"    pm.expect(pm.response.text()).to.include(\"`Password` is required\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "40736723-d6f32a37-ee7f-4f14-aa04-1a85fc7463bd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjIyMzliMWQ4MTcwNmE2ZjRlNTJjNyIsImlhdCI6MTc2MDY5OTQ5NiwiZXhwIjoxNzYwNzg1ODk2fQ.EgM8kN5Kqu72ie66Q5kwtdiW1e13Hh3aZ65Bgu8CjWs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"\",\n    \"password\": \"\",\n    \"firstName\": \"Jake\",\n    \"lastName\": \"Crisp\",\n    \"mobilePhone\": \"0498765432\",\n    \"areaOfInterest\": \"Public Transport\",\n    \"streetName\": \"Tester\",\n    \"city\": \"Sydney\",\n    \"state\": \"NSW\",\n    \"postcode\": 2999\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/join",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auth",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Jake's weak Password Strength sign up failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "38e6ed5b-bc3f-4fef-a8b1-a35d3d735a15",
+								"exec": [
+									"pm.test(\"Missing First Name error message is returned\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Your password is not strong enough. Try again - it must at least 10 characters and must contain uppercase and lower case characters, numbers and symbols\");",
+									"",
+									"});",
+									"",
+									"pm.test(\"Status code is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "40736723-a602efe2-2c0d-4cca-94d6-f7d9c75d0eb9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"Jake.Crisp3@gmail.com\",\n    \"password\": \"weakjake\",\n    \"firstName\": \"Jake\",\n    \"lastName\": \"Crisp\",\n    \"mobilePhone\": \"0498765432\",\n    \"areaOfInterest\": \"Public Transport\",\n    \"streetName\": \"Tester\",\n    \"city\": \"Sydney\",\n    \"state\": \"NSW\",\n    \"postcode\": 2999\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/join",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auth",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Jake's Invalid Email - Sign up fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9a6bc91d-81b5-43f2-b8d4-51c7b6e649ee",
+								"exec": [
+									"pm.test(\"Invalid email address error message is returned\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Please enter a valid email address that contains '@'. For example: example@example.com\");",
+									"});",
+									"",
+									"pm.test(\"Status code is 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "40736723-cdd7d6c1-627c-42a8-ab74-4dc88021e4d9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"Jake.Invalidgmail.com\",\n    \"password\": \"CrispyJake123!\",\n    \"firstName\": \"Jake\",\n    \"lastName\": \"Crisp\",\n    \"mobilePhone\": \"0498765432\",\n    \"areaOfInterest\": \"Public Transport\",\n    \"streetName\": \"Tester\",\n    \"city\": \"Sydney\",\n    \"state\": \"NSW\",\n    \"postcode\": 2999\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/join",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"auth",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get unauthorised member",
+					"id": "40736723-f3feeb79-ced1-4b12-90e5-e94313a8c812",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get unknown member - Not found",
+					"id": "40736723-c8da46d6-e8c0-47af-a364-fe3b350feee9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update Member's Account details - Invalid Email",
+					"id": "40736723-03863013-4fbb-40de-86c9-7ca5bb0da582",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "40736723-a253c826-f370-4d2e-a772-cfde037a7498"
+		},
+		{
+			"name": "PA_Integration Tests",
+			"item": [
+				{
+					"name": "Contact Form",
+					"item": [
+						{
+							"name": "Valid Contact Form submission",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ea92e361-fe04-480e-9be9-403f25a7907e",
+										"exec": [
+											"pm.test(\"Verifies successful email sending\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Email sent\");",
+											"});",
+											"",
+											"// Verifies successful email sending",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-8accf29c-c05a-4ac0-99a0-00f94b6d4aef",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "jwt",
+									"jwt": [
+										{
+											"key": "algorithm",
+											"value": "HS256",
+											"type": "string"
+										},
+										{
+											"key": "isSecretBase64Encoded",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "payload",
+											"value": "{}",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										},
+										{
+											"key": "headerPrefix",
+											"value": "Bearer",
+											"type": "string"
+										},
+										{
+											"key": "queryParamKey",
+											"value": "token",
+											"type": "string"
+										},
+										{
+											"key": "header",
+											"value": "{}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"firstName\": \"Amy\",\n    \"lastName\": \"Green\",\n    \"email\": \"amy.green@gmail.com\",\n    \"message\": \"Hello Pyrmont team, I would like to know more about your upcoming events.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/contact/sendEmail",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"contact",
+										"sendEmail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Invalid Contact Email - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fb27faae-ab40-47b0-9b9a-add60db9e51a",
+										"exec": [
+											"pm.test(\"Verifies unsuccessful contact email sending\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"email\");",
+											"});",
+											"",
+											"// Verifies successful email sending",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-2837058c-dbdf-4c0b-80b6-4fe111a0beff",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "jwt",
+									"jwt": [
+										{
+											"key": "algorithm",
+											"value": "HS256",
+											"type": "string"
+										},
+										{
+											"key": "isSecretBase64Encoded",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "payload",
+											"value": "{}",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										},
+										{
+											"key": "headerPrefix",
+											"value": "Bearer",
+											"type": "string"
+										},
+										{
+											"key": "queryParamKey",
+											"value": "token",
+											"type": "string"
+										},
+										{
+											"key": "header",
+											"value": "{}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"firstName\": \"Amy\",\n    \"lastName\": \"Green\",\n    \"email\": \"amy.green#invalidemail.com\",\n    \"message\": \"Interested in volunteering in area of Education.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/contact/sendEmail",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"contact",
+										"sendEmail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Missing Contact Message - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e82ca8be-551c-4b38-b4ad-1b5be11b9ff2",
+										"exec": [
+											"pm.test(\"Verifies missing contact message sending\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"message\");",
+											"});",
+											"",
+											"// Verifies successful email sending",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-cf468f93-25ac-4580-a5cc-aab439349fbb",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "jwt",
+									"jwt": [
+										{
+											"key": "algorithm",
+											"value": "HS256",
+											"type": "string"
+										},
+										{
+											"key": "isSecretBase64Encoded",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "payload",
+											"value": "{}",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										},
+										{
+											"key": "headerPrefix",
+											"value": "Bearer",
+											"type": "string"
+										},
+										{
+											"key": "queryParamKey",
+											"value": "token",
+											"type": "string"
+										},
+										{
+											"key": "header",
+											"value": "{}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"firstName\": \"Amy\",\n    \"lastName\": \"Green\",\n    \"email\": \"amy.green@gmail.com\",\n    \"message\": \"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/contact/sendEmail",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"contact",
+										"sendEmail"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "40736723-e722b6a7-7905-48db-acd5-26633ce88df9"
+				},
+				{
+					"name": "Event",
+					"item": [
+						{
+							"name": "Create new event",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2289c954-2ffd-4c98-8de8-b4e2a99fbb1e",
+										"exec": [
+											"// Event uploaded using Admin token by Admin",
+											"pm.test(\"Status code is 201 Created\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-4af3889f-d6a3-4643-9097-d74d7c53414c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Annual Club Fundraiser",
+											"type": "text",
+											"uuid": "5d013a95-4022-4d31-85a2-de77989c2110"
+										},
+										{
+											"key": "description",
+											"value": "Fundraising event for community development",
+											"type": "text",
+											"uuid": "f712d369-1f31-4885-8f7b-883c07518e12"
+										},
+										{
+											"key": "location",
+											"value": "Sydney Town Hall",
+											"type": "text",
+											"uuid": "a547381b-79e8-48ab-8e06-d1e24aee45b5"
+										},
+										{
+											"key": "startDate",
+											"value": "2025-12-01T09:00:00Z",
+											"type": "text",
+											"uuid": "d188e990-0c44-4a5d-8492-18cb111d6d81"
+										},
+										{
+											"key": "endDate",
+											"value": "2025-12-01T16:00:00Z",
+											"type": "text",
+											"uuid": "ba6e641b-df27-4dce-92b8-2dd53da8df19"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "05128a56-05d8-4b28-a5b9-d684c2d6e9a8",
+											"src": "postman-cloud:///1f0aefd9-43b0-4460-84e7-fa5ea3a2859f"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/events",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create new event without JWT token - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2289c954-2ffd-4c98-8de8-b4e2a99fbb1e",
+										"exec": [
+											"// Event uploaded using Admin token by Admin",
+											"pm.test(\"Status code is 401 Unauthorised\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test(\"Verifies unsuccessful creation of event without JWT token authorisation\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Access token is required\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-dc8575e1-9649-4ff7-86f2-55e7bb225041",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Annual Club Fundraiser",
+											"type": "text",
+											"uuid": "5d013a95-4022-4d31-85a2-de77989c2110"
+										},
+										{
+											"key": "description",
+											"value": "Fundraising event for community development",
+											"type": "text",
+											"uuid": "f712d369-1f31-4885-8f7b-883c07518e12"
+										},
+										{
+											"key": "location",
+											"value": "Sydney Town Hall",
+											"type": "text",
+											"uuid": "a547381b-79e8-48ab-8e06-d1e24aee45b5"
+										},
+										{
+											"key": "startDate",
+											"value": "2025-12-01T09:00:00Z",
+											"type": "text",
+											"uuid": "d188e990-0c44-4a5d-8492-18cb111d6d81"
+										},
+										{
+											"key": "endDate",
+											"value": "2025-12-01T16:00:00Z",
+											"type": "text",
+											"uuid": "ba6e641b-df27-4dce-92b8-2dd53da8df19"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "05128a56-05d8-4b28-a5b9-d684c2d6e9a8",
+											"src": "postman-cloud:///1f0aefd9-43b0-4460-84e7-fa5ea3a2859f"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/events",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create new event with Invalid file type - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2289c954-2ffd-4c98-8de8-b4e2a99fbb1e",
+										"exec": [
+											"// Event uploaded using Admin token by Admin",
+											"pm.test(\"Status code is 500 Internal Server Error\", function () {",
+											"    pm.response.to.have.status(500);",
+											"});",
+											"",
+											"pm.test(\"Verifies unsuccessful creation of event with Invalid File Type upload\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Only image and document files are allowed\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-11693c0e-c5cc-4dfc-b5cf-8e4f0ca2be38",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Test Malicious File",
+											"type": "text",
+											"uuid": "5d013a95-4022-4d31-85a2-de77989c2110"
+										},
+										{
+											"key": "description",
+											"value": "This should fail to upload the event",
+											"type": "text",
+											"uuid": "f712d369-1f31-4885-8f7b-883c07518e12"
+										},
+										{
+											"key": "location",
+											"value": "Sydney Town Hall",
+											"type": "text",
+											"uuid": "a547381b-79e8-48ab-8e06-d1e24aee45b5"
+										},
+										{
+											"key": "startDate",
+											"value": "2025-12-01T09:00:00Z",
+											"type": "text",
+											"uuid": "d188e990-0c44-4a5d-8492-18cb111d6d81"
+										},
+										{
+											"key": "endDate",
+											"value": "2025-12-01T12:00:00Z",
+											"type": "text",
+											"uuid": "ba6e641b-df27-4dce-92b8-2dd53da8df19"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "05128a56-05d8-4b28-a5b9-d684c2d6e9a8",
+											"src": "postman-cloud:///1f0af883-b9e7-49a0-9aee-db49ff4d7197"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/events",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all upcoming events",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8dedf5fe-14c9-41e5-8e98-6ae898411670",
+										"exec": [
+											"// Verify all upcoming events are visible by Admin access",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-68a5940d-02df-4232-8f7e-7f459ab1eb39",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/events/upcoming",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"upcoming"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get upcoming events unauthorised - Negative Test",
+							"id": "40736723-48aae7fc-e942-4ddf-958b-e2ee0bfd7601",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Publish an event",
+							"id": "40736723-7b4d001c-390a-410e-a70c-9ea9aee3bd88",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/events//publish",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"",
+										"publish"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Publish a non-existent event - Negative Test",
+							"id": "40736723-90301044-7ff5-483a-abe2-7cf6c2c29bb5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/events//publish",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"",
+										"publish"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all published events - Public Access",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8dedf5fe-14c9-41e5-8e98-6ae898411670",
+										"exec": [
+											"// Verify all upcoming events are visible by Admin access",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-9aeaef2c-a5fb-49d5-a900-809fbc9305ae",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/events/upcoming",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"upcoming"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update existing event (with new image)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a4035fe4-93b2-4608-8c00-e789e4e1e6d6",
+										"exec": [
+											"// Updated existing gallery Image info using Admin token by Admin",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-ef14acea-2a2e-434e-9bfa-bfac731442f8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Updated Fundraiser Charity Title",
+											"type": "text",
+											"uuid": "fd22404a-a256-430f-b9be-9dd3a3e83b48"
+										},
+										{
+											"key": "description",
+											"value": "Updated Fundraiser Charity description",
+											"type": "text",
+											"uuid": "e895d5d6-4eb8-416f-a4fe-9209d72ffd1a"
+										},
+										{
+											"key": "location",
+											"value": "Updated Darling Harbour",
+											"type": "text",
+											"uuid": "dbb46e1c-3e19-4346-9227-742de63544be"
+										},
+										{
+											"key": "startDate",
+											"value": "2025-12-02T09:00:00Z",
+											"type": "text",
+											"uuid": "d83757b3-db07-45dc-be39-21737ea43899"
+										},
+										{
+											"key": "endDate",
+											"value": "2025-12-02T17:00:00Z",
+											"type": "text",
+											"uuid": "96322db2-2773-40c8-8103-409642481020"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "da7acb85-142a-480f-a42a-8518b4322e90",
+											"src": "postman-cloud:///1f0af035-9b21-40d0-b0e8-f7b9d9135b60"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/events/68f85a5e5af4748f42866185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"68f85a5e5af4748f42866185"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with Invalid Date order - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a4035fe4-93b2-4608-8c00-e789e4e1e6d6",
+										"exec": [
+											"// Updated existing gallery Image info using Admin token by Admin",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Verifies Invalid Date order in Update Event process\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"End date must be after start date\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-682f4f08-29f1-493d-a1c9-03bb459ffc48",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Updated Fundraiser Charity Title",
+											"type": "text",
+											"uuid": "fd22404a-a256-430f-b9be-9dd3a3e83b48"
+										},
+										{
+											"key": "description",
+											"value": "Updated Fundraiser Charity description",
+											"type": "text",
+											"uuid": "e895d5d6-4eb8-416f-a4fe-9209d72ffd1a"
+										},
+										{
+											"key": "location",
+											"value": "Updated Darling Harbour",
+											"type": "text",
+											"uuid": "dbb46e1c-3e19-4346-9227-742de63544be"
+										},
+										{
+											"key": "startDate",
+											"value": "2025-12-10T09:00:00Z",
+											"type": "text",
+											"uuid": "d83757b3-db07-45dc-be39-21737ea43899"
+										},
+										{
+											"key": "endDate",
+											"value": "2025-12-05T09:00:00Z",
+											"type": "text",
+											"uuid": "96322db2-2773-40c8-8103-409642481020"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "da7acb85-142a-480f-a42a-8518b4322e90",
+											"src": "postman-cloud:///1f0af035-9b21-40d0-b0e8-f7b9d9135b60"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/events/68f85a5e5af4748f42866185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"68f85a5e5af4748f42866185"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete an existing event",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fabeeb17-50d2-4593-beff-ad74af498e27",
+										"exec": [
+											"// Verify deletion of existing project",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Verifies successful deletion of existing event\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Event deleted successfully\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-528024a5-3362-4489-a628-b328e7f684e6",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/event/68f85a5e5af4748f42866185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"event",
+										"68f85a5e5af4748f42866185"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete a non-existent event - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fabeeb17-50d2-4593-beff-ad74af498e27",
+										"exec": [
+											"// Verify deletion of existing project",
+											"pm.test(\"Status code is 404 Not Found\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Verifies unsuccessful deletion of non-existing event ID\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Event not found\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-37ce50ce-b013-4727-bfb3-7889813ec44c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/events/00a00a0a0aa0000a00000000",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"00a00a0a0aa0000a00000000"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete an Invalid ID event - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fabeeb17-50d2-4593-beff-ad74af498e27",
+										"exec": [
+											"// Verify deletion of existing project",
+											"pm.test(\"Status code is 500 Internal Server Error\", function () {",
+											"    pm.response.to.have.status(500);",
+											"});",
+											"",
+											"pm.test(\"Verifies unsuccessful deletion of Invalid event ID\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Cast to ObjectId failed\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-add00f04-6d48-4dc6-80ec-65bdd169785f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTEwNjE4NCwiZXhwIjoxNzYxMTkyNTg0fQ.-1eJ3kubHCb443BtLX5DcmZM7QUZHQyOhf9Qji2R7HQ",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/events/1234invalidFormat",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"events",
+										"1234invalidFormat"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "40736723-78d91df3-0397-4656-8f2c-20ede493ab3f"
+				},
+				{
+					"name": "Projects",
+					"item": [
+						{
+							"name": "Upload new project",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6fddd3b7-12ab-4b1c-9787-6ccde0f0373f",
+										"exec": [
+											"// Project successfully created - Negative test",
+											"pm.test(\"Status code is 201 Created\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-13d1e201-4d7d-4afb-b5a7-d5a55323c9ba",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "project_name",
+											"value": "Pyrmont Bay Renewal",
+											"type": "text",
+											"uuid": "5e15aebb-1227-4384-9749-641afd468f78"
+										},
+										{
+											"key": "project_description",
+											"value": "Major community project to upgrade the Pyrmont Bay precinct and infrastructure.",
+											"type": "text",
+											"uuid": "fbf31ee5-ece3-4ba6-80d2-4fa31b0ebc35"
+										},
+										{
+											"key": "project_type",
+											"value": "open",
+											"type": "text",
+											"uuid": "87b14f83-a249-45ef-9760-953a8b240122"
+										},
+										{
+											"key": "project_date",
+											"value": "2025-11-10",
+											"type": "text",
+											"uuid": "df7e7890-a30f-4a61-bf63-20f1cde44493"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "97137ef7-1afb-4aae-a1bd-7618c7348c8f",
+											"src": "postman-cloud:///1f0ac8df-2ae4-49c0-92ef-2e024e2b7be8"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload invalid project image file",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c06c1bb5-c87a-478e-b97d-206d39ad1a36",
+										"exec": [
+											"// Invalid project image file uploaded - Negative test",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Verifies invalid project file upload\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Only image files (JPEG, PNG, GIF, WebP) are allowed\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-2ee9266a-7b03-4b56-8bde-d8c89a4007f5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "project_name",
+											"value": "Pyrmont Bay Renewal",
+											"type": "text",
+											"uuid": "5e15aebb-1227-4384-9749-641afd468f78"
+										},
+										{
+											"key": "project_description",
+											"value": "Major community project to upgrade the Pyrmont Bay precinct and infrastructure.",
+											"type": "text",
+											"uuid": "fbf31ee5-ece3-4ba6-80d2-4fa31b0ebc35"
+										},
+										{
+											"key": "project_type",
+											"value": "open",
+											"type": "text",
+											"uuid": "87b14f83-a249-45ef-9760-953a8b240122"
+										},
+										{
+											"key": "project_date",
+											"value": "2025-11-10",
+											"type": "text",
+											"uuid": "df7e7890-a30f-4a61-bf63-20f1cde44493"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "97137ef7-1afb-4aae-a1bd-7618c7348c8f",
+											"src": "postman-cloud:///1f0ac8f6-de83-4280-9def-1a28b03b4e43"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all projects",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "97c7a313-cb18-4e2d-ac56-b3d8efec1297",
+										"exec": [
+											"// Verify get all projects image",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-5c869024-5bf1-48c1-a88c-2be99b7f811e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "project_name",
+											"value": "Pyrmont Bay Renewal",
+											"type": "text",
+											"uuid": "5e15aebb-1227-4384-9749-641afd468f78"
+										},
+										{
+											"key": "project_description",
+											"value": "Major community project to upgrade the Pyrmont Bay precinct and infrastructure.",
+											"type": "text",
+											"uuid": "fbf31ee5-ece3-4ba6-80d2-4fa31b0ebc35"
+										},
+										{
+											"key": "project_type",
+											"value": "open",
+											"type": "text",
+											"uuid": "87b14f83-a249-45ef-9760-953a8b240122"
+										},
+										{
+											"key": "project_date",
+											"value": "2025-11-10",
+											"type": "text",
+											"uuid": "df7e7890-a30f-4a61-bf63-20f1cde44493"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "97137ef7-1afb-4aae-a1bd-7618c7348c8f",
+											"src": "postman-cloud:///1f0ac8f6-de83-4280-9def-1a28b03b4e43"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get open projects",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "04763baa-5fe7-4ac9-bcbe-85ca23d5c74f",
+										"exec": [
+											"// Verify get open projects image",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-f792cc4c-2f57-4ac6-9b01-21acfc4f3b26",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "project_name",
+											"value": "Pyrmont Bay Renewal",
+											"type": "text",
+											"uuid": "5e15aebb-1227-4384-9749-641afd468f78"
+										},
+										{
+											"key": "project_description",
+											"value": "Major community project to upgrade the Pyrmont Bay precinct and infrastructure.",
+											"type": "text",
+											"uuid": "fbf31ee5-ece3-4ba6-80d2-4fa31b0ebc35"
+										},
+										{
+											"key": "project_type",
+											"value": "open",
+											"type": "text",
+											"uuid": "87b14f83-a249-45ef-9760-953a8b240122"
+										},
+										{
+											"key": "project_date",
+											"value": "2025-11-10",
+											"type": "text",
+											"uuid": "df7e7890-a30f-4a61-bf63-20f1cde44493"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "97137ef7-1afb-4aae-a1bd-7618c7348c8f",
+											"src": "postman-cloud:///1f0ac8f6-de83-4280-9def-1a28b03b4e43"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects/open",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects",
+										"open"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get project by valid ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2ef920a9-9010-4228-bc5c-1fd0419634e6",
+										"exec": [
+											"// Verify invalid project ID request",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-49d8f0ee-d2bc-45cc-bc5f-d1bdab1f0b76",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "project_name",
+											"value": "Pyrmont Bay Renewal",
+											"type": "text",
+											"uuid": "5e15aebb-1227-4384-9749-641afd468f78"
+										},
+										{
+											"key": "project_description",
+											"value": "Major community project to upgrade the Pyrmont Bay precinct and infrastructure.",
+											"type": "text",
+											"uuid": "fbf31ee5-ece3-4ba6-80d2-4fa31b0ebc35"
+										},
+										{
+											"key": "project_type",
+											"value": "open",
+											"type": "text",
+											"uuid": "87b14f83-a249-45ef-9760-953a8b240122"
+										},
+										{
+											"key": "project_date",
+											"value": "2025-11-10",
+											"type": "text",
+											"uuid": "df7e7890-a30f-4a61-bf63-20f1cde44493"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "97137ef7-1afb-4aae-a1bd-7618c7348c8f",
+											"src": "postman-cloud:///1f0ac8f6-de83-4280-9def-1a28b03b4e43"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects/68cfcc3cbbf007bf47fb0d17",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects",
+										"68cfcc3cbbf007bf47fb0d17"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get project by Invalid ID - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6342e1ea-850b-4248-948a-c11401cb5fc8",
+										"exec": [
+											"// Verify invalid project ID request",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Verifies invalid project file upload\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Error has occurred when retrieving project\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-15b6dea5-1754-44f3-ac03-7250c20643f6",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/projects/99abcd1efgh001ij11kl1m10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects",
+										"99abcd1efgh001ij11kl1m10"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update existing project details",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ef93e0d0-4a75-4488-bad2-cd870a81fabd",
+										"exec": [
+											"// Update existing project details",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-bf00f147-dc79-442e-b56e-59938503d43e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"project_name\": \"Pyrmont Bay Upgrade Phase 2\",\n  \"project_description\": \"Extended works for the Pyrmont Bay area\",\n  \"project_type\": \"open\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects/68f445798883a0bb402878b9",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects",
+										"68f445798883a0bb402878b9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload new image for existing project",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "445aa298-43a4-438a-966c-6f82c6651342",
+										"exec": [
+											"// Update existing project with new image upload",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-d6b92ec5-027d-48d6-a6c8-f08c2884d6fb",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "project_name",
+											"value": "Pyrmont Upgrade",
+											"type": "text",
+											"uuid": "fadbe38e-3c3c-47f7-ab7c-6d0333660b77"
+										},
+										{
+											"key": "project_description",
+											"value": "Updated Project Image",
+											"type": "text",
+											"uuid": "0a5ae434-a864-4b01-90a5-b49548105635"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "bed4c246-25cf-4b96-bfa1-e7a6f28ed6b7",
+											"src": "postman-cloud:///1f0ac956-0c96-4000-836b-043d7ca787b0"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects/68f445798883a0bb402878b9/upload",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects",
+										"68f445798883a0bb402878b9",
+										"upload"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete existing project",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "05ce779c-c6e8-45f6-9967-5399868a5a5d",
+										"exec": [
+											"// Verify deletion of existing project",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Verifies successful deletion of existing project\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Project deleted successfully\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-a578977f-88d2-413e-8e3d-294d32c37e3a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"project_name\": \"Pyrmont Bay Upgrade Phase 2\",\n  \"project_description\": \"Extended works for the Pyrmont Bay area\",\n  \"project_type\": \"open\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/projects/68f445798883a0bb402878b9",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"projects",
+										"68f445798883a0bb402878b9"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "40736723-aa021c51-fd3c-494d-ba63-e3d71d5d7c0b"
+				},
+				{
+					"name": "Meeting Minutes",
+					"item": [
+						{
+							"name": "Meeting Minutes successfully uploaded",
+							"id": "40736723-034ede6a-69c7-4ec2-8453-e00c76c07c0b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/minutes",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"minutes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Meeting Minutes invalid filetype upload - Negative test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b73b5905-b2ec-49b3-9093-330aef0caded",
+										"exec": [
+											"// Invalid meeting minutes file uploaded - Negative test",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Verifies invalid meeting minutes file upload\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Only PDF files are allowed\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-52d834c9-e6cb-4d62-9aba-bd09cae76cd0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Committee Meeting - Nov 2025",
+											"type": "text",
+											"uuid": "66fc0d28-9bf6-4e91-9a43-0fc0736383c3"
+										},
+										{
+											"key": "note",
+											"value": "Discussed upcoming and funding plans",
+											"type": "text",
+											"uuid": "bca0c34f-7912-4beb-8faa-f51d62622d39"
+										},
+										{
+											"key": "status",
+											"value": "open",
+											"type": "text",
+											"uuid": "834acfd7-fc8b-40aa-8f01-494af1537409"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "4d7ac585-7c08-437a-8d82-2e59e63b2b88",
+											"src": "postman-cloud:///1f0aca1c-627b-4ad0-b71c-a7a9734ab36d"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/minutes",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"minutes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all meeting minutes",
+							"id": "40736723-18f4223e-08d5-4f13-bde1-8c39bda55baf",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get unauthorized role meeting minutes - Negative test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "522dea6e-fb11-4f06-8fc2-765f4234d632",
+										"exec": [
+											"// Verify unauthorised role access (member) to meeting minutes",
+											"pm.test(\"Status code is 403 Forbidden\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test(\"Verifies unauthorised role access to meeting minutes\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Access denied: Insufficient role permissions\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-5002ed2d-d4e8-4b8f-a2bf-f8ae6af36188",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjBhOThkNmU4ZTdjYjE4MzkzOTE3MiIsImlhdCI6MTc2MDc5MTQ1MCwiZXhwIjoxNzYwODc3ODUwfQ.oANebR_oyg0p9Wm3sm09kTL82zdiDMxgOsVrkQL1yQc",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/minutes",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"minutes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get published meeting minutes by Member",
+							"id": "40736723-5a5d6737-4bbe-41cf-8537-1c879faf3ffc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Publish a Meeting minute",
+							"id": "40736723-efedcba3-d915-43e0-a0ff-8af43e321f58",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Committee Meeting - Nov 2025",
+											"type": "text",
+											"uuid": "66fc0d28-9bf6-4e91-9a43-0fc0736383c3"
+										},
+										{
+											"key": "note",
+											"value": "Discussed upcoming and funding plans",
+											"type": "text",
+											"uuid": "bca0c34f-7912-4beb-8faa-f51d62622d39"
+										},
+										{
+											"key": "status",
+											"value": "open",
+											"type": "text",
+											"uuid": "834acfd7-fc8b-40aa-8f01-494af1537409"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "4d7ac585-7c08-437a-8d82-2e59e63b2b88",
+											"src": "postman-cloud:///1f0aca1c-627b-4ad0-b71c-a7a9734ab36d"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/minutes/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"minutes",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Meeting Minutes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "3477e35f-3355-4a5f-aed8-139560583712",
+										"exec": [
+											"// Update existing meeting minutes info and new file upload",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-bbd86e28-562b-430f-8b85-6c865104d0a4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Upcoming Committee Meeting 2025",
+											"type": "text",
+											"uuid": "66fc0d28-9bf6-4e91-9a43-0fc0736383c3"
+										},
+										{
+											"key": "note",
+											"value": "Added notes from new discussion",
+											"type": "text",
+											"uuid": "bca0c34f-7912-4beb-8faa-f51d62622d39"
+										},
+										{
+											"key": "status",
+											"value": "draft",
+											"type": "text",
+											"uuid": "834acfd7-fc8b-40aa-8f01-494af1537409"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "4d7ac585-7c08-437a-8d82-2e59e63b2b88",
+											"src": "postman-cloud:///1f0aca74-29c4-49a0-8b7c-541de3bd6e7e"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/minutes/68f46d908883a0bb402878e9",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"minutes",
+										"68f46d908883a0bb402878e9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete existing meeting minutes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0a58f334-f740-40c0-bb8a-76fa7fe77c15",
+										"exec": [
+											"// Verify deletion of existing project",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Verifies successful deletion of existing meeting minutes\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Meeting deleted successfully\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-578c8506-12a6-43cb-9dc5-62e51831432a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MDgzOTAxNSwiZXhwIjoxNzYwOTI1NDE1fQ.YbmI1Zx7e3fE5B4O-bJMR43hzt1JiOgv1A2e81vgyms",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/minutes/68f46d908883a0bb402878e9",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"minutes",
+										"68f46d908883a0bb402878e9"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "40736723-f45c5682-6859-44df-b7a2-bf5635e57aed"
+				},
+				{
+					"name": "Account Management Tests",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1b2bc4f4-4f4b-405b-a575-eef02c2b83a6",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"token\", jsonData.token);",
+											"",
+											"// Assertion on HTTP response/status code",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a2187d69-4440-49b1-a2e3-1ead8f68c22c",
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-1d38edab-8d28-446c-bd5b-6a0afab04e9f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"1@example.com\",\n    \"password\": \"1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign Up for Amy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "64d06739-cfe4-4130-a26c-2d65ed1dd1ad",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"contactId\", jsonData._id);",
+											"// Use Postman console to debug why below Status code is 201 assertion test is failing (when a new contact is added to the database)",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-5b76feea-4bcf-481e-bd2c-c91af46cdf6e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"firstName\": \"{{firstName}}\",\n    \"lastName\": \"{{lastName}}\",\n    \"mobilePhone\": \"{{mobilePhone}}\",\n    \"areaOfInterest\": \"{{areaOfInterest}}\",\n    \"streetName\": \"{{streetName}}\",\n    \"city\": \"{{city}}\",\n    \"state\": \"{{state}}\",\n    \"postcode\": \"{{postcode}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/auth/join",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"auth",
+										"join"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in for Amy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "01719d9e-ed46-4545-898d-905f6cd66f86",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"token\", jsonData.token);",
+											"",
+											"// Assertion on HTTP response/status code",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-1ec9cdb7-bc73-4ac4-b36c-4e6f8475018b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"1@example.com\",\n    \"password\": \"1\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Amy's Contact",
+							"id": "40736723-b2d0c2d3-4320-46e4-b99b-f93996fcf833",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "jwt",
+									"jwt": [
+										{
+											"key": "algorithm",
+											"value": "HS256",
+											"type": "string"
+										},
+										{
+											"key": "isSecretBase64Encoded",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "payload",
+											"value": "{}",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										},
+										{
+											"key": "headerPrefix",
+											"value": "Bearer",
+											"type": "string"
+										},
+										{
+											"key": "queryParamKey",
+											"value": "token",
+											"type": "string"
+										},
+										{
+											"key": "header",
+											"value": "{}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/users/me",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"users",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Amy1's account",
+							"id": "40736723-a58ba421-3152-4084-961f-d3e6393b9ff7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjIyMzliMWQ4MTcwNmE2ZjRlNTJjNyIsImlhdCI6MTc2MDY5OTQ5NiwiZXhwIjoxNzYwNzg1ODk2fQ.EgM8kN5Kqu72ie66Q5kwtdiW1e13Hh3aZ65Bgu8CjWs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/users/me",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"users",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "26f104b5-fa01-426f-bc80-3352afa2892d",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"token\", jsonData.token);",
+											"",
+											"// Assertion on HTTP response/status code",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-17fc59cd-f48b-4900-8d2d-6e067fbea23c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Account",
+							"id": "40736723-7b809cfa-eff0-48c3-b6d5-30e979c71837",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PUT",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Member's Account Details",
+							"id": "40736723-027a213f-2af2-4cc8-8a74-b5b2218ba911",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Sign up for Jake",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "028063ae-1d6d-487a-950f-bb04dc1ed8a2",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.environment.set(\"contactId\", jsonData._id);",
+											"// Use Postman console to debug why below Status code is 201 assertion test is failing (when a new contact is added to the database)",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-6ff7d132-caee-42e2-b292-ca1befcddb6d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"Jake.Crisp2@gmail.com\",\n    \"password\": \"CrispyJake99!\",\n    \"firstName\": \"Jake\",\n    \"lastName\": \"Crisp\",\n    \"mobilePhone\": \"0498765432\",\n    \"areaOfInterest\": \"Public Transport\",\n    \"streetName\": \"Tester\",\n    \"city\": \"Sydney\",\n    \"state\": \"NSW\",\n    \"postcode\": 2999\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/auth/join",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"auth",
+										"join"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Jake's Details",
+							"id": "40736723-61be66b9-146c-49fb-9105-00f81f80ea9f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					],
+					"id": "40736723-6f6e11db-f732-423a-8800-4b37ab86a153"
+				},
+				{
+					"name": "Payment Checkout Tests",
+					"item": [
+						{
+							"name": "Payment Checkout",
+							"id": "40736723-b911684a-b944-4bab-909d-f2e740c471b6",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": []
+							},
+							"response": []
+						}
+					],
+					"id": "40736723-287585ba-90f4-4153-a909-c02792570c24"
+				},
+				{
+					"name": "Gallery",
+					"item": [
+						{
+							"name": "Admin's upload to gallery",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "43d11f7f-765a-48b4-a5bf-c5fd39f4e4b3",
+										"exec": [
+											"// Image uploaded to gallery using Admin token by Admin",
+											"pm.test(\"Status code is 201 Created\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-3e4220f6-fd54-4477-b2e2-63e501543a9e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTA4Mzc5MCwiZXhwIjoxNzYxMTcwMTkwfQ.x8eW-LZIvdflIj32y5NiCu0rOwr9YTUc68gfoKgieoU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "caption",
+											"value": "Harbour sunset view",
+											"type": "text",
+											"uuid": "b0f76ddb-3be3-433b-86bd-55c01c60a557"
+										},
+										{
+											"key": "alt",
+											"value": "Sydney Harbour",
+											"type": "text",
+											"uuid": "a22bb821-c33c-4142-983e-330a3f02dfbc"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "5edb8e64-6793-474d-b80c-0c1fd5eb205d",
+											"src": "/Users/henilpatel/Downloads/test.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/gallery",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin's Invalid upload to gallery - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "cd81194d-de29-4a51-b981-d24bfa7dde34",
+										"exec": [
+											"// Image doesn't exist - Negative test",
+											"pm.test(\"Status code is 500 Internal Server Error\", function () {",
+											"    pm.response.to.have.status(500);",
+											"});",
+											"",
+											"pm.test(\"Verifies unsuccessful gallery invalid image upload\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Error: Only image files (JPEG, PNG, GIF, WebP) are allowed\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-04546c1a-5c62-4d87-bf0a-2df1f00499a4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTA4Mzc5MCwiZXhwIjoxNzYxMTcwMTkwfQ.x8eW-LZIvdflIj32y5NiCu0rOwr9YTUc68gfoKgieoU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "caption",
+											"value": "Harbour Sunset View",
+											"type": "text",
+											"uuid": "e07baa51-98c1-489f-8e1e-66fe434acecd"
+										},
+										{
+											"key": "alt",
+											"value": "",
+											"type": "text",
+											"uuid": "d3a20323-e39e-4e3f-9d48-87bb933cb36a"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "489e1a2e-9af4-49a3-abf9-f4f7c7f2064d",
+											"src": "postman-cloud:///1f0aed11-0b59-4960-8bfc-801478d54493"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/gallery",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Unauthorised role upload gallery fail - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a19645f2-2115-4026-8b12-b213f9242d8c",
+										"exec": [
+											"// Image doesn't exist - Negative test",
+											"pm.test(\"Status code is 403 Forbidden\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"pm.test(\"Verifies unsuccessful image upload by non-admin (member)\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Forbidden: Insufficient role\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-57cfef1f-e4d8-4511-8c81-6703b6488462",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjBhOThkNmU4ZTdjYjE4MzkzOTE3MiIsImlhdCI6MTc2MDc5MTQ1MCwiZXhwIjoxNzYwODc3ODUwfQ.oANebR_oyg0p9Wm3sm09kTL82zdiDMxgOsVrkQL1yQc",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "caption",
+											"value": "Harbour Sunset",
+											"type": "text",
+											"uuid": "6fbe0c21-499b-4185-aaa7-8c9d210fe64e"
+										},
+										{
+											"key": "alt",
+											"value": "Sydney Harbour",
+											"type": "text",
+											"uuid": "40643b51-0df2-4bf6-a489-c3fc44a59a84"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"uuid": "00fa090f-4738-4d8a-9f2a-e36fdd08de88",
+											"src": "postman-cloud:///1f0abef3-2eea-4740-91ff-4ca1032bdfbb"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/gallery",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all gallery images",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "80fe31a4-32a6-40ff-9fdd-c4c70479a07e",
+										"exec": [
+											"// Verify public access to all uploaded images in gallery page",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-428d0f76-92fd-4ac4-bd56-3d609cd0b5e5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/gallery",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update existing gallery image",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dc5a0fcf-9f23-4966-883b-f3252c33d06a",
+										"exec": [
+											"// Image uploaded to gallery using Admin token by Admin",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-c97ea5c3-7239-4ee5-8a41-e6a2c99c3797",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTA4Mzc5MCwiZXhwIjoxNzYxMTcwMTkwfQ.x8eW-LZIvdflIj32y5NiCu0rOwr9YTUc68gfoKgieoU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "caption",
+											"value": "Updated Harbour Image caption",
+											"type": "text",
+											"uuid": "0a974aa9-9635-4343-b9f7-2bb8e8b72bbe"
+										},
+										{
+											"key": "alt",
+											"value": "Updated Harbour alt text",
+											"type": "text",
+											"uuid": "878ed8d4-f78c-47b1-9252-3a6d8e90a776"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"uuid": "e8a32956-e8d8-4fc5-adac-099f2d69ad5d",
+											"src": "postman-cloud:///1f0aed44-4c89-4060-8aad-4f8cf9e45be5"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/gallery/68f813c45af4748f42866162",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery",
+										"68f813c45af4748f42866162"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete current gallery image",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2d79ed22-2995-40ce-8b42-a88578688894",
+										"exec": [
+											"// Verify deletion of existing gallery image",
+											"pm.test(\"Status code is 200 OK\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Verifies successful deletion of existing gallery image\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Image deleted successfully\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-160ce8fd-d853-4540-8e05-58dfdb29e65d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTA4Mzc5MCwiZXhwIjoxNzYxMTcwMTkwfQ.x8eW-LZIvdflIj32y5NiCu0rOwr9YTUc68gfoKgieoU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/gallery/68f813c45af4748f42866162",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery",
+										"68f813c45af4748f42866162"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Gallery img Invalid ID Format - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "56ac0e3d-dfcd-476d-b461-13819e7cdb29",
+										"exec": [
+											"// Gallery Image ID invalid format - Negative test",
+											"pm.test(\"Status code is 400 Bad Request\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Verifies Gallery Image Invalid ID Format\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Error deleting image\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-616606a9-9d3d-421e-92cd-2df3703ecc05",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTA4Mzc5MCwiZXhwIjoxNzYxMTcwMTkwfQ.x8eW-LZIvdflIj32y5NiCu0rOwr9YTUc68gfoKgieoU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/gallery/123456789abcdefghijklmno",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery",
+										"123456789abcdefghijklmno"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete non-existent Gallery img ID - Negative Test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "56ac0e3d-dfcd-476d-b461-13819e7cdb29",
+										"exec": [
+											"// Gallery Image doesn't exist - Negative test",
+											"pm.test(\"Status code is 404 Not Found\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Verifies non-existent Gallery Image ID\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Image not found\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"id": "40736723-40f0695d-c7f7-4b37-9d4a-82a4ef3a6133",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZGI2NTQ5NWMwMDhiZDg3NzhkMGI0YSIsImlhdCI6MTc2MTA4Mzc5MCwiZXhwIjoxNzYxMTcwMTkwfQ.x8eW-LZIvdflIj32y5NiCu0rOwr9YTUc68gfoKgieoU",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/gallery/68f813c45af4748f42866162",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"gallery",
+										"68f813c45af4748f42866162"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "40736723-c45727ff-dbe9-4117-b55d-e53ee6f3d4de"
+				}
+			],
+			"id": "40736723-2f8100f1-5569-46dd-91c1-7c47e71c4c15"
+		}
+	]
+}
