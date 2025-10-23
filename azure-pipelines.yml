@@ -3,19 +3,77 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
+# trigger:
+# - main
+
+# pool:
+#   vmImage: ubuntu-latest
+
+# steps:
+# - task: NodeTool@0
+#   inputs:
+#     versionSpec: '20.x'
+#   displayName: 'Install Node.js'
+
+# - script: |
+#     npm install
+#     # npm run build
+#   displayName: 'npm install and build'
+
 trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'macos-latest'
+
+variables:
+  NODE_VERSION: '22.x'
 
 steps:
+# 1️⃣ Install Node.js
 - task: NodeTool@0
   inputs:
-    versionSpec: '20.x'
+    versionSpec: '$(NODE_VERSION)'
   displayName: 'Install Node.js'
 
+# 2️⃣ Checkout Repository
+- checkout: self
+  displayName: 'Checkout Repository'
+
+# 3️⃣ Install Dependencies for Frontend
 - script: |
-    npm install
-    # npm run build
-  displayName: 'npm install and build'
+    cd frontend
+    npm ci
+  displayName: 'Install NPM Dependencies (Frontend)'
+
+# 4️⃣ Run Unit Tests (Vitest)
+- script: |
+    cd frontend
+    npx vitest run --reporter=verbose
+  displayName: 'Run Unit Tests (Vitest)'
+
+# 5️⃣ Install Playwright Browsers
+- script: |
+    cd tests
+    npx playwright install --with-deps
+  displayName: 'Install Playwright Browsers'
+
+# 6️⃣ Run End-to-End Tests (Playwright)
+- script: |
+    cd tests
+    npx playwright test
+  displayName: 'Run E2E Tests (Playwright)'
+
+# 7️⃣ Install Postman CLI
+- script: |
+    curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+  displayName: 'Install Postman CLI'
+
+# 8️⃣ Run Postman API Tests
+- script: |
+    postman login --with-api-key $(POSTMAN_API_KEY)
+    postman collection run "40736723-db8c3e0f-a3ac-4d79-ba36-855db6ce14f2" \
+      -e "40736723-cbfd1bac-89b4-404a-94d4-46a44ca5e57d"
+  displayName: 'Run API Tests (Postman)'
+  env:
+    POSTMAN_API_KEY: $(POSTMAN_API_KEY)
