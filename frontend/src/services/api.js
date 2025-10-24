@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const server = "http://localhost:5000";
+const server = "https://pyrmontactionsds-production.up.railway.app";
 
 const api = {
     async get(endpoint, token) {
