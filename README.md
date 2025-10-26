@@ -14,3 +14,4 @@ A community-driven web platform for membership management, secure online payment
 - To run the unit test, first go to the folder where vite.config.js is (ie. `cd frontend`) and then run: `$ npx vitest run ../test/unit`
 - `"test:unit": "vitest run unit/JoinUsForm.spec.js"`
 
+
