@@ -13,5 +13,3 @@ A community-driven web platform for membership management, secure online payment
 - Install relevant dependencies first: `$ npm install -D vitest @vue/test-utils vue-tsc jsdom @vitejs/plugin-vue` in `frontend` folder (where vite.config.js is)
 - To run the unit test, first go to the folder where vite.config.js is (ie. `cd frontend`) and then run: `$ npx vitest run ../test/unit`
 - `"test:unit": "vitest run unit/JoinUsForm.spec.js"`
-
-
