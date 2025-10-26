@@ -1,3 +1,3 @@
-const SERVER_URL = 'http://localhost:5000'; // Replace with your server URL
+const SERVER_URL = 'https://pyrmontactionsds-production.up.railway.app'; // Replace with your server URL
 
 export default SERVER_URL;
